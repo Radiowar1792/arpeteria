@@ -1,0 +1,16 @@
+{
+  "name": "@arpeteria/scripts",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "bootstrap": "tsx bootstrap-schema.ts",
+    "seed": "tsx seed.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2"
+  }
+}

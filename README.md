@@ -14,6 +14,12 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 - Site : http://localhost:4321
 - Directus (admin) : http://localhost:8055
 
+Première fois : les collections n'existent pas encore dans Directus. Pose le schéma et les catégories initiales avec les scripts (voir [`cms/README.md`](./cms/README.md#poser-le-schéma-la-première-fois)) :
+
+```bash
+cd scripts && npm install && npm run bootstrap && npm run seed
+```
+
 ## Structure du monorepo
 
 - `apps/web` — le site public (Astro)
