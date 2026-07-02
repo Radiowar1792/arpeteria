@@ -1,0 +1,13 @@
+arpeteria.fr {
+    reverse_proxy web:80
+    encode gzip zstd
+    header {
+        Cache-Control "public, max-age=3600"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+    }
+}
+
+admin.arpeteria.fr {
+    reverse_proxy directus:8055
+}

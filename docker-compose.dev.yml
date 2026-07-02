@@ -1,0 +1,18 @@
+# Surcharge de développement local : expose les ports directement sur localhost,
+# désactive Caddy (pas de HTTPS/domaine nécessaire en dev).
+# Usage : docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  directus:
+    ports:
+      - "8055:8055"
+    environment:
+      PUBLIC_URL: http://localhost:8055
+      CORS_ORIGIN: http://localhost:4321
+
+  web:
+    ports:
+      - "4321:80"
+
+  caddy:
+    profiles: ["prod-only"]

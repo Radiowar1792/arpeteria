@@ -1,0 +1,12 @@
+:root {
+  --arpeteria-rouge: #b5121b;
+  --arpeteria-noir: #111111;
+  --arpeteria-blanc: #ffffff;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  color: var(--arpeteria-noir);
+  background: var(--arpeteria-blanc);
+}

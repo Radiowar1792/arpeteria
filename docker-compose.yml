@@ -1,0 +1,82 @@
+name: arpeteria
+
+services:
+  # ───────────────────────── Base de données ─────────────────────────
+  database:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_DATABASE}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [internal]
+
+  # ───────────────────────── CMS Directus ─────────────────────────
+  directus:
+    image: directus/directus:11
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - directus_uploads:/directus/uploads
+      - ./cms/extensions:/directus/extensions
+    environment:
+      SECRET: ${DIRECTUS_SECRET}
+      ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD}
+      DB_CLIENT: pg
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      PUBLIC_URL: https://admin.arpeteria.fr
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: https://arpeteria.fr
+      FILES_MAX_UPLOAD_SIZE: 200mb
+      CACHE_ENABLED: "true"
+      CACHE_STORE: memory
+    networks: [internal, web]
+
+  # ───────────────────────── Site statique (Astro) ─────────────────────────
+  # Variante recommandée : héberger ces fichiers sur Cloudflare Pages et supprimer ce service.
+  web:
+    build:
+      context: ./apps/web
+      args:
+        DIRECTUS_URL: http://directus:8055
+        DIRECTUS_STATIC_TOKEN: ${DIRECTUS_STATIC_TOKEN}
+    restart: unless-stopped
+    depends_on: [directus]
+    networks: [web]
+
+  # ───────────────────────── Reverse proxy ─────────────────────────
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [web]
+
+volumes:
+  pgdata:
+  directus_uploads:
+  caddy_data:
+  caddy_config:
+
+networks:
+  internal:
+  web:
