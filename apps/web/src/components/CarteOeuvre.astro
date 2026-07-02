@@ -1,0 +1,25 @@
+---
+import { assetUrl, type Oeuvre } from '../lib/directus.ts';
+
+interface Props {
+  oeuvre: Oeuvre;
+}
+const { oeuvre } = Astro.props;
+---
+<a class="carte-oeuvre" href={`/oeuvre/${oeuvre.slug}`}>
+  {oeuvre.couverture && (
+    <img
+      class="carte-oeuvre__image"
+      src={assetUrl(oeuvre.couverture.id)}
+      alt=""
+      loading="lazy"
+      width="300"
+      height="400"
+    />
+  )}
+  <div class="carte-oeuvre__contenu">
+    <h3>{oeuvre.titre}</h3>
+    {oeuvre.auteur && <p class="carte-oeuvre__auteur">{oeuvre.auteur}</p>}
+    {oeuvre.date_oeuvre && <p class="carte-oeuvre__date">{oeuvre.date_oeuvre}</p>}
+  </div>
+</a>

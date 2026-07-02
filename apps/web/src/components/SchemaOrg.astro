@@ -1,0 +1,21 @@
+---
+import type { Oeuvre } from '../lib/directus.ts';
+
+interface Props {
+  oeuvre: Oeuvre;
+  url: string;
+}
+const { oeuvre, url } = Astro.props;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: oeuvre.titre,
+  url,
+  inLanguage: oeuvre.langue ?? 'fr',
+  ...(oeuvre.auteur ? { author: { '@type': 'Person', name: oeuvre.auteur } } : {}),
+  ...(oeuvre.description ? { description: oeuvre.description.replace(/<[^>]+>/g, '') } : {}),
+  ...(oeuvre.date_publication ? { datePublished: oeuvre.date_publication } : {}),
+};
+---
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

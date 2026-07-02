@@ -1,0 +1,15 @@
+---
+import OeuvreLayout from '../../layouts/Oeuvre.astro';
+import { getOeuvres, type Oeuvre } from '../../lib/directus.ts';
+
+export async function getStaticPaths() {
+  const oeuvres = await getOeuvres();
+  return oeuvres.map((oeuvre) => ({ params: { slug: oeuvre.slug }, props: { oeuvre } }));
+}
+
+interface Props {
+  oeuvre: Oeuvre;
+}
+const { oeuvre } = Astro.props;
+---
+<OeuvreLayout oeuvre={oeuvre} />

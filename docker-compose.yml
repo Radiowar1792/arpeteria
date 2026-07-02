@@ -53,6 +53,7 @@ services:
       context: ./apps/web
       args:
         DIRECTUS_URL: http://directus:8055
+        DIRECTUS_PUBLIC_URL: https://admin.arpeteria.fr
         DIRECTUS_STATIC_TOKEN: ${DIRECTUS_STATIC_TOKEN}
     restart: unless-stopped
     depends_on: [directus]

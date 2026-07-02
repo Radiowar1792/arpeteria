@@ -1,9 +1,35 @@
 ---
 import Base from '../layouts/Base.astro';
+import CarteOeuvre from '../components/CarteOeuvre.astro';
+import { getOeuvres } from '../lib/directus.ts';
+
+const recentes = (await getOeuvres()).slice(0, 8);
 ---
 <Base title="Accueil">
   <main>
-    <h1>Arpeteria</h1>
-    <p>Bibliothèque numérique de la culture savoyarde (arpitane).</p>
+    <section class="hero">
+      <h1>Arpeteria</h1>
+      <p>
+        Bibliothèque numérique de la culture savoyarde (arpitane) : archives historiques et
+        créations contemporaines.
+      </p>
+      <div class="hero__actions">
+        <a class="bouton bouton--principal" href="/archives">Explorer les archives</a>
+        <a class="bouton bouton--secondaire" href="/contemporain">Créations contemporaines</a>
+      </div>
+    </section>
+
+    {recentes.length > 0 && (
+      <section>
+        <h2>Dernières publications</h2>
+        <ul class="grille-oeuvres">
+          {recentes.map((oeuvre) => (
+            <li>
+              <CarteOeuvre oeuvre={oeuvre} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
   </main>
 </Base>

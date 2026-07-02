@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base
+  title="Recherche"
+  description="Recherche dans les archives et créations contemporaines d'Arpeteria."
+>
+  <main>
+    <h1>Recherche</h1>
+    <div id="recherche"></div>
+  </main>
+  <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+  <script src="/pagefind/pagefind-ui.js" is:inline></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.PagefindUI) {
+        new window.PagefindUI({ element: '#recherche', showSubResults: true });
+      }
+    });
+  </script>
+</Base>

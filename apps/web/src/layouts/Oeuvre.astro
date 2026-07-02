@@ -1,0 +1,46 @@
+---
+import Base from './Base.astro';
+import SchemaOrg from '../components/SchemaOrg.astro';
+import LecteurPDF from '../components/LecteurPDF.astro';
+import LienExterne from '../components/LienExterne.astro';
+import { assetUrl, type Oeuvre } from '../lib/directus.ts';
+import { canonicalUrl } from '../lib/seo.ts';
+
+interface Props {
+  oeuvre: Oeuvre;
+}
+const { oeuvre } = Astro.props;
+const url = canonicalUrl(`/oeuvre/${oeuvre.slug}`);
+const image = oeuvre.couverture ? assetUrl(oeuvre.couverture.id) : undefined;
+const sectionLabel = oeuvre.section === 'archives' ? 'Archives' : 'Contemporain';
+---
+<Base title={oeuvre.titre} description={oeuvre.description ?? undefined} image={image}>
+  <SchemaOrg oeuvre={oeuvre} url={url} />
+  <main class="fiche-oeuvre">
+    <nav class="fil-ariane" aria-label="Fil d'Ariane">
+      <a href="/">Accueil</a> › <a href={`/${oeuvre.section}`}>{sectionLabel}</a>
+      {oeuvre.categorie && (
+        <>
+          {' '}› <a href={`/${oeuvre.section}/${oeuvre.categorie.slug}`}>{oeuvre.categorie.nom}</a>
+        </>
+      )}
+    </nav>
+
+    {image && <img class="fiche-oeuvre__couverture" src={image} alt="" />}
+
+    <h1>{oeuvre.titre}</h1>
+    {oeuvre.auteur && <p class="fiche-oeuvre__auteur">{oeuvre.auteur}</p>}
+    {oeuvre.date_oeuvre && <p class="fiche-oeuvre__date">{oeuvre.date_oeuvre}</p>}
+
+    {oeuvre.description && (
+      <div class="fiche-oeuvre__description" set:html={oeuvre.description} />
+    )}
+
+    {oeuvre.type_media === 'pdf' && oeuvre.fichier_pdf && (
+      <LecteurPDF fichierId={oeuvre.fichier_pdf.id} />
+    )}
+    {oeuvre.type_media !== 'pdf' && oeuvre.url_externe && (
+      <LienExterne type={oeuvre.type_media} url={oeuvre.url_externe} />
+    )}
+  </main>
+</Base>

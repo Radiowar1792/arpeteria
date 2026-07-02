@@ -1,0 +1,13 @@
+---
+import { assetUrl } from '../lib/directus.ts';
+
+interface Props {
+  fichierId: string;
+}
+const { fichierId } = Astro.props;
+const url = assetUrl(fichierId);
+---
+<div class="lecteur-pdf">
+  <a class="bouton bouton--principal" href={url} target="_blank" rel="noopener">Consulter le PDF</a>
+  <a class="bouton bouton--secondaire" href={`${url}?download`} download>Télécharger</a>
+</div>

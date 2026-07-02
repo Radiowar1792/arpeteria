@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCategories } from '../../lib/directus.ts';
+import { SECTIONS } from '../../lib/taxonomies.ts';
+
+const section = SECTIONS.archives;
+const categories = await getCategories('archives');
+---
+<Base title={section.label} description={section.description}>
+  <main>
+    <h1>{section.label}</h1>
+    <p>{section.description}</p>
+    <ul class="grille-categories">
+      {categories.map((categorie) => (
+        <li>
+          <a href={`/archives/${categorie.slug}`}>
+            <h2>{categorie.nom}</h2>
+            {categorie.description && <p>{categorie.description}</p>}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </main>
+</Base>

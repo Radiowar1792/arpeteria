@@ -1,0 +1,40 @@
+---
+import Base from '../../../layouts/Base.astro';
+import CarteOeuvre from '../../../components/CarteOeuvre.astro';
+import { getCategories, getOeuvres, type Categorie } from '../../../lib/directus.ts';
+
+export async function getStaticPaths() {
+  const categories = await getCategories('archives');
+  return categories.map((categorie) => ({
+    params: { periode: categorie.slug },
+    props: { categorie },
+  }));
+}
+
+interface Props {
+  categorie: Categorie;
+}
+const { categorie } = Astro.props;
+const oeuvres = await getOeuvres({ categorieSlug: categorie.slug });
+---
+<Base title={categorie.nom} description={categorie.description ?? undefined}>
+  <main>
+    <nav class="fil-ariane" aria-label="Fil d'Ariane">
+      <a href="/">Accueil</a> › <a href="/archives">Archives</a>
+    </nav>
+    <h1>{categorie.nom}</h1>
+    {categorie.description && <p>{categorie.description}</p>}
+
+    {oeuvres.length > 0 ? (
+      <ul class="grille-oeuvres">
+        {oeuvres.map((oeuvre) => (
+          <li>
+            <CarteOeuvre oeuvre={oeuvre} />
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>Aucune œuvre publiée dans cette catégorie pour le moment.</p>
+    )}
+  </main>
+</Base>

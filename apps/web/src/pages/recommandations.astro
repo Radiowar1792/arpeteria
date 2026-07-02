@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import { getRecommandations } from '../lib/directus.ts';
+
+const recommandations = await getRecommandations();
+---
+<Base
+  title="Recommandations"
+  description="Sites amis et ressources recommandées sur la culture savoyarde et l'arpitan."
+>
+  <main>
+    <h1>Recommandations</h1>
+    {recommandations.length > 0 ? (
+      <ul class="liste-recommandations">
+        {recommandations.map((rec) => (
+          <li>
+            <a href={rec.url} target="_blank" rel="noopener noreferrer">{rec.nom_site}</a>
+            {rec.description && <p>{rec.description}</p>}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>Aucune recommandation publiée pour le moment.</p>
+    )}
+  </main>
+</Base>

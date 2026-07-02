@@ -1,0 +1,15 @@
+---
+interface Props {
+  type: 'video' | 'audio' | 'lien';
+  url: string;
+}
+const { type, url } = Astro.props;
+const labels: Record<Props['type'], string> = {
+  video: 'Voir la vidéo',
+  audio: "Écouter l'audio",
+  lien: 'Visiter le site',
+};
+---
+<a class="bouton bouton--principal lien-externe" href={url} target="_blank" rel="noopener noreferrer">
+  {labels[type]}
+</a>

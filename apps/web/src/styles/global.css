@@ -1,12 +1,262 @@
 :root {
   --arpeteria-rouge: #b5121b;
-  --arpeteria-noir: #111111;
+  --arpeteria-rouge-fonce: #7d0d13;
+  --arpeteria-noir: #171310;
   --arpeteria-blanc: #ffffff;
+  --arpeteria-gris-clair: #f3ede9;
+  --arpeteria-gris: #6b625c;
+  --arpeteria-bordure: #e3dad4;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: 'Georgia', 'Iowan Old Style', serif;
   color: var(--arpeteria-noir);
   background: var(--arpeteria-blanc);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--arpeteria-rouge);
+}
+
+h1,
+h2,
+h3 {
+  font-family: system-ui, sans-serif;
+  line-height: 1.2;
+}
+
+main {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ── Header ── */
+.site-header {
+  border-bottom: 3px solid var(--arpeteria-rouge);
+  background: var(--arpeteria-noir);
+}
+
+.site-header__inner {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.site-header__brand {
+  font-family: system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--arpeteria-blanc);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+
+.site-header__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.site-header__nav a {
+  color: var(--arpeteria-gris-clair);
+  text-decoration: none;
+  font-family: system-ui, sans-serif;
+  font-size: 0.95rem;
+}
+
+.site-header__nav a:hover {
+  color: var(--arpeteria-blanc);
+  text-decoration: underline;
+}
+
+/* ── Footer ── */
+.site-footer {
+  border-top: 1px solid var(--arpeteria-bordure);
+  padding: 1.5rem;
+  text-align: center;
+  font-family: system-ui, sans-serif;
+  font-size: 0.85rem;
+  color: var(--arpeteria-gris);
+}
+
+/* ── Hero (accueil) ── */
+.hero {
+  text-align: center;
+  padding: 2rem 0 3rem;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.hero p {
+  max-width: 40rem;
+  margin: 0 auto 1.5rem;
+  color: var(--arpeteria-gris);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* ── Boutons ── */
+.bouton {
+  display: inline-block;
+  font-family: system-ui, sans-serif;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.65rem 1.4rem;
+  border-radius: 0.25rem;
+  border: 2px solid var(--arpeteria-rouge);
+}
+
+.bouton--principal {
+  background: var(--arpeteria-rouge);
+  color: var(--arpeteria-blanc);
+}
+
+.bouton--principal:hover {
+  background: var(--arpeteria-rouge-fonce);
+  border-color: var(--arpeteria-rouge-fonce);
+}
+
+.bouton--secondaire {
+  background: transparent;
+  color: var(--arpeteria-rouge);
+}
+
+.bouton--secondaire:hover {
+  background: var(--arpeteria-gris-clair);
+}
+
+/* ── Fil d'Ariane ── */
+.fil-ariane {
+  font-family: system-ui, sans-serif;
+  font-size: 0.85rem;
+  color: var(--arpeteria-gris);
+  margin-bottom: 1.5rem;
+}
+
+.fil-ariane a {
+  color: var(--arpeteria-gris);
+}
+
+/* ── Grilles ── */
+.grille-categories,
+.grille-oeuvres,
+.liste-recommandations {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.grille-categories {
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+}
+
+.grille-oeuvres {
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+}
+
+.grille-categories li {
+  border: 1px solid var(--arpeteria-bordure);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+}
+
+.grille-categories a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.grille-categories h2 {
+  color: var(--arpeteria-rouge);
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+}
+
+/* ── Carte œuvre ── */
+.carte-oeuvre {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid var(--arpeteria-bordure);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.carte-oeuvre__image {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  display: block;
+  background: var(--arpeteria-gris-clair);
+}
+
+.carte-oeuvre__contenu {
+  padding: 0.75rem;
+  font-family: system-ui, sans-serif;
+}
+
+.carte-oeuvre__contenu h3 {
+  font-size: 1rem;
+  margin: 0 0 0.25rem;
+}
+
+.carte-oeuvre__auteur,
+.carte-oeuvre__date {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--arpeteria-gris);
+}
+
+/* ── Fiche œuvre ── */
+.fiche-oeuvre__couverture {
+  max-width: 20rem;
+  width: 100%;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.fiche-oeuvre__auteur,
+.fiche-oeuvre__date {
+  font-family: system-ui, sans-serif;
+  color: var(--arpeteria-gris);
+  margin: 0.1rem 0;
+}
+
+.fiche-oeuvre__description {
+  margin: 1.5rem 0;
+}
+
+.lecteur-pdf {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* ── Recommandations ── */
+.liste-recommandations li {
+  border-bottom: 1px solid var(--arpeteria-bordure);
+  padding-bottom: 1rem;
 }
