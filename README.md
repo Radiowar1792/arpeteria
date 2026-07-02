@@ -20,6 +20,10 @@ Première fois : les collections n'existent pas encore dans Directus. Pose le sc
 cd scripts && npm install && npm run bootstrap && npm run seed
 ```
 
+## Déploiement en production
+
+Voir [`docs/deploiement.md`](./docs/deploiement.md) pour la procédure complète, de zéro, sur un VPS Debian 12.
+
 ## Structure du monorepo
 
 - `apps/web` — le site public (Astro)

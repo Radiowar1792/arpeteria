@@ -25,6 +25,10 @@ services:
     depends_on:
       database:
         condition: service_healthy
+    ports:
+      # Lié à 127.0.0.1 uniquement : accès admin/scripts depuis le VPS lui-même
+      # (ou via tunnel SSH), jamais exposé publiquement. Le trafic public passe par Caddy.
+      - "127.0.0.1:8055:8055"
     volumes:
       - directus_uploads:/directus/uploads
       - ./cms/extensions:/directus/extensions
@@ -51,6 +55,10 @@ services:
   web:
     build:
       context: ./apps/web
+      # `docker build` tourne dans un réseau isolé par défaut : sans cette ligne,
+      # `RUN npm run build` ne pourrait pas résoudre "directus" pendant le build.
+      # Le conteneur directus doit donc déjà tourner avant de builder web (voir docs/deploiement.md).
+      network: web
       args:
         DIRECTUS_URL: http://directus:8055
         DIRECTUS_PUBLIC_URL: https://admin.arpeteria.fr

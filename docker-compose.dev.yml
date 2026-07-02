@@ -4,8 +4,7 @@
 
 services:
   directus:
-    ports:
-      - "8055:8055"
+    # Port déjà publié (127.0.0.1:8055) par docker-compose.yml — suffisant en dev local.
     environment:
       PUBLIC_URL: http://localhost:8055
       CORS_ORIGIN: http://localhost:4321
