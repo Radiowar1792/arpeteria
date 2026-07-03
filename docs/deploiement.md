@@ -209,7 +209,7 @@ Les deux doivent répondre `200 OK` (ou `301`/`302` selon la config) avec un cer
 
 ## Étape 13 — Publier une première œuvre et mettre à jour le site
 
-Tant que l'automatisation (Flow Directus → CI/CD, prévue en Phase 3) n'est pas en place, chaque publication nécessite un rebuild manuel du site :
+Sans l'automatisation de l'Étape 13bis, chaque publication nécessite un rebuild manuel du site :
 
 1. Le conservateur crée/publie une œuvre dans `https://admin.arpeteria.fr`.
 2. Sur le VPS :
@@ -217,6 +217,55 @@ Tant que l'automatisation (Flow Directus → CI/CD, prévue en Phase 3) n'est pa
    cd ~/arpeteria
    CACHEBUST=$(date +%s) docker compose up -d --build web
    ```
+
+## Étape 13bis — Automatiser le rebuild (recommandé)
+
+Un petit service (`scripts/rebuild-webhook.mjs`) tourne sur le VPS et relance le build du site
+dès qu'un Flow Directus l'appelle — plus besoin de taper la commande manuellement à chaque
+publication.
+
+**1. Génère un secret et configure `.env` :**
+
+```bash
+openssl rand -hex 32   # → REBUILD_WEBHOOK_TOKEN
+nano .env              # REBUILD_WEBHOOK_TOKEN=... (REBUILD_WEBHOOK_PORT=9002 par défaut, OK à garder)
+```
+
+**2. Installe le service en tant que service systemd** (redémarre tout seul, y compris après un reboot du VPS) :
+
+```bash
+sudo cp infra/systemd/arpeteria-rebuild-webhook.service /etc/systemd/system/
+sudo nano /etc/systemd/system/arpeteria-rebuild-webhook.service   # ajuste User=/WorkingDirectory= si besoin
+sudo systemctl daemon-reload
+sudo systemctl enable --now arpeteria-rebuild-webhook
+sudo systemctl status arpeteria-rebuild-webhook   # doit être "active (running)"
+```
+
+> ⚠️ Ne pas ouvrir ce port (9002) dans `ufw` : il ne doit être joignable que depuis le réseau
+> Docker interne (le conteneur `directus`), jamais depuis l'extérieur. Le jeton dans l'en-tête
+> `Authorization` reste une protection supplémentaire, mais inutile de l'exposer publiquement.
+
+**3. Recrée `directus`** pour qu'il puisse joindre le service via `host.docker.internal` :
+
+```bash
+docker compose up -d directus
+```
+
+**4. Crée le Flow dans Directus** (**Paramètres → Flows → Créer un flow**) :
+
+- **Déclencheur** : "Event Hook" → Type **"Action (Non-Blocking)"** → Actions : `items.create`,
+  `items.update`, `items.delete` → Collections : `oeuvres`, `categories`, `recommandations`.
+- **Opération** : "Webhook / Request URL" → Méthode `POST` → URL `http://host.docker.internal:9002/rebuild`
+  → Headers : `Authorization: Bearer <REBUILD_WEBHOOK_TOKEN>` (la même valeur que dans `.env`).
+- Active le flow.
+
+**5. Teste** : publie/modifie une œuvre, puis observe les logs du service pendant qu'il rebuild :
+
+```bash
+journalctl -u arpeteria-rebuild-webhook -f
+```
+
+Le site doit se mettre à jour tout seul après ~30-60 secondes, sans commande manuelle.
 
 ## Étape 14 — Sauvegardes
 
@@ -266,4 +315,5 @@ docker system df
 | `password authentication failed for user` dans les logs `directus` après un `docker compose down` (sans `-v`) puis `up` avec un `.env` modifié | Le volume `pgdata` garde l'ancien mot de passe (Postgres ne le change qu'à la toute première initialisation). Soit tu remets l'ancien `DB_PASSWORD`, soit `docker compose down -v` pour repartir sur un volume neuf cohérent avec le nouveau `.env` |
 | `docker compose up --build` échoue avec `network mode "web" not supported by buildkit` | Le build de `web` doit utiliser `network: host` (déjà configuré dans `docker-compose.yml`), pas un réseau bridge personnalisé — BuildKit ne le supporte pas. Si l'erreur persiste après un `git pull`, vérifie que `docker-compose.yml` contient bien `network: host` pour le service `web` |
 | Une œuvre publiée dans Directus n'apparaît pas sur le site après `docker compose up -d --build web` | Docker a réutilisé le cache du build précédent (aucun fichier du repo n'a changé, donc `RUN npm run build` n'a pas été relancé). Toujours préfixer par `CACHEBUST=$(date +%s)` (voir Étape 12) |
+| Le rebuild automatique (Étape 13bis) ne se déclenche pas | Vérifie dans l'ordre : `systemctl status arpeteria-rebuild-webhook` (doit être actif), `docker compose up -d directus` a bien été relancé après l'ajout d'`extra_hosts`, le jeton dans le Flow correspond à `REBUILD_WEBHOOK_TOKEN` dans `.env`, et que le Flow est bien activé et scope sur `oeuvres`/`categories`/`recommandations` |
 | Erreur de connexion admin Directus | Vérifier `DIRECTUS_ADMIN_EMAIL`/`DIRECTUS_ADMIN_PASSWORD` dans `.env`, redémarrer avec `docker compose up -d directus` |

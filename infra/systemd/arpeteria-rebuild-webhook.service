@@ -1,0 +1,18 @@
+[Unit]
+Description=Arpeteria — webhook de rebuild automatique du site statique
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+# Adapter le chemin si le repo n'est pas cloné dans /opt/arpeteria, et l'utilisateur
+# si ce n'est pas "conservateur" (voir docs/deploiement.md, Étape 2). Cet utilisateur
+# doit appartenir au groupe "docker" pour pouvoir lancer `docker compose`.
+User=conservateur
+WorkingDirectory=/opt/arpeteria/scripts
+# bash -lc (login shell) pour hériter du PATH de l'utilisateur (nvm, etc.) si besoin.
+ExecStart=/bin/bash -lc 'npm run webhook'
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

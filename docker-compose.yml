@@ -25,6 +25,11 @@ services:
     depends_on:
       database:
         condition: service_healthy
+    # Permet à un Flow Directus (Webhook / Request URL) de joindre le service de rebuild
+    # automatique qui tourne sur l'hôte, hors Docker (voir scripts/rebuild-webhook.mjs et
+    # docs/deploiement.md) via http://host.docker.internal:<port>/rebuild.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       # ⚠️ Ouvert sur toutes les interfaces (pas seulement 127.0.0.1) pour permettre
       # un reverse proxy externe (ex. Nginx Proxy Manager sur un autre hôte) de router

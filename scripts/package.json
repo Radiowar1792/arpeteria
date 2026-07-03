@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "bootstrap": "tsx bootstrap-schema.ts",
-    "seed": "tsx seed.ts"
+    "seed": "tsx seed.ts",
+    "webhook": "node rebuild-webhook.mjs"
   },
   "devDependencies": {
     "tsx": "^4.22.4"
