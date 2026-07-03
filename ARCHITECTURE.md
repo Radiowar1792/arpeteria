@@ -232,11 +232,24 @@ arpeteria/
 | `type_media` | select | `pdf` / `video` / `audio` / `lien` |
 | `fichier_pdf` | file | Upload PDF (si type = pdf) |
 | `url_externe` | string | Lien YouTube/PeerTube/audio/site (si type ≠ pdf) |
-| `couverture` | image | Vignette pour les listes et l'OpenGraph |
+| `couverture` | image | Vignette pour les listes et l'OpenGraph — voir dimensions recommandées ci-dessous |
 | `langue` | select | `fr` / `frp` (arpitan) / `oc` (occitan) / `la` (latin)… |
 | `date_oeuvre` | string | Date ou période de l'œuvre originale (texte libre : "vers 1846") |
 | `date_publication` | datetime | Auto — date d'ajout sur le site |
 | `mots_cles` | tags | Pour la recherche et les meta keywords |
+
+#### Dimensions recommandées pour `couverture`
+
+Les cartes (accueil, listes archives/contemporain) affichent cette image en **format 4:3**
+(recadrage automatique — `object-fit: cover`, voir `apps/web/src/styles/global.css`), et la
+réutilisent pour l'OpenGraph (aperçu de partage sur les réseaux sociaux).
+
+- **Ratio** : 4:3 (paysage) — une image trop verticale (portrait) ou trop panoramique sera recadrée
+  sur les bords.
+- **Taille conseillée** : **1200 × 900 px** (suffisant pour un affichage net sur écrans haute
+  densité, sans être inutilement lourd).
+- **Minimum acceptable** : 800 × 600 px.
+- **Format** : JPEG ou WebP, viser < 300 Ko après export (Directus ne compresse pas à l'upload).
 
 ### Collection `categories`
 
