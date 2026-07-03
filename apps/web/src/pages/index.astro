@@ -1,17 +1,32 @@
 ---
 import Base from '../layouts/Base.astro';
 import CarteOeuvre from '../components/CarteOeuvre.astro';
-import { getOeuvres } from '../lib/directus.ts';
+import { getOeuvres, getCategories, getRecommandations } from '../lib/directus.ts';
+import { SECTIONS } from '../lib/taxonomies.ts';
 
-const recentes = (await getOeuvres()).slice(0, 8);
+const oeuvres = await getOeuvres();
+const recentes = oeuvres.slice(0, 8);
+const [categoriesArchives, categoriesContemporain, recommandations] = await Promise.all([
+  getCategories('archives'),
+  getCategories('contemporain'),
+  getRecommandations(),
+]);
+const nombreCategories = categoriesArchives.length + categoriesContemporain.length;
+
+const chiffres = [
+  { valeur: oeuvres.length, label: oeuvres.length > 1 ? 'œuvres publiées' : 'œuvre publiée' },
+  { valeur: nombreCategories, label: 'catégories' },
+  { valeur: 2, label: 'sections : archives & contemporain' },
+];
 ---
 <Base title="Accueil">
-  <main>
+  <main id="contenu-principal">
     <section class="hero">
+      <img class="hero__logo" src="/logo/logo-256.png" alt="" width="72" height="72" />
       <h1>Arpeteria</h1>
       <p>
         Bibliothèque numérique de la culture savoyarde (arpitane) : archives historiques et
-        créations contemporaines.
+        créations contemporaines, réunies, documentées et mises en libre accès.
       </p>
       <div class="hero__actions">
         <a class="bouton bouton--principal" href="/archives">Explorer les archives</a>
@@ -19,9 +34,53 @@ const recentes = (await getOeuvres()).slice(0, 8);
       </div>
     </section>
 
+    <section class="chiffres" aria-label="Arpeteria en chiffres">
+      {chiffres.map((chiffre) => (
+        <div class="chiffres__item">
+          <p class="chiffres__valeur">{chiffre.valeur}</p>
+          <p class="chiffres__label">{chiffre.label}</p>
+        </div>
+      ))}
+    </section>
+
+    <section class="mission">
+      <div class="mission__texte">
+        <p class="kicker">La mission</p>
+        <h2>Sauvegarder et transmettre un patrimoine vivant</h2>
+        <p>
+          Beaucoup d'œuvres en langue et culture savoyarde restent difficiles à trouver : textes
+          anciens dispersés, créations récentes peu visibles. Arpeteria les rassemble au même
+          endroit, sous forme de PDF consultables et téléchargeables, complétés par des liens vers
+          vidéos, enregistrements audio et sites recommandés.
+        </p>
+        <p>
+          <a href="/a-propos">En savoir plus sur le projet →</a>
+        </p>
+      </div>
+      <div class="mission__visuel" aria-hidden="true">
+        <img src="/logo/logo-512.png" alt="" width="220" height="220" loading="lazy" />
+      </div>
+    </section>
+
+    <section class="sections-cles">
+      <a class="section-carte" href="/archives">
+        <h2>{SECTIONS.archives.label}</h2>
+        <p>{SECTIONS.archives.description}</p>
+        <span class="section-carte__lien">Parcourir les archives →</span>
+      </a>
+      <a class="section-carte section-carte--contemporain" href="/contemporain">
+        <h2>{SECTIONS.contemporain.label}</h2>
+        <p>{SECTIONS.contemporain.description}</p>
+        <span class="section-carte__lien">Découvrir les créations →</span>
+      </a>
+    </section>
+
     {recentes.length > 0 && (
-      <section>
-        <h2>Dernières publications</h2>
+      <section class="section-oeuvres">
+        <div class="section-oeuvres__entete">
+          <h2>Dernières publications</h2>
+          <a class="lien-voir-tout" href="/archives">Voir tout →</a>
+        </div>
         <ul class="grille-oeuvres">
           {recentes.map((oeuvre) => (
             <li>
@@ -29,6 +88,17 @@ const recentes = (await getOeuvres()).slice(0, 8);
             </li>
           ))}
         </ul>
+      </section>
+    )}
+
+    {recommandations.length > 0 && (
+      <section class="teaser-recommandations">
+        <h2>Envie d'aller plus loin ?</h2>
+        <p>
+          Découvre aussi les sites et ressources recommandés par le conservateur autour de la
+          culture savoyarde et de l'arpitan.
+        </p>
+        <a class="bouton bouton--secondaire" href="/recommandations">Voir les recommandations</a>
       </section>
     )}
   </main>

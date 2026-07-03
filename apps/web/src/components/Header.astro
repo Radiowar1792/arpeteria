@@ -9,7 +9,10 @@ const links = [
 ---
 <header class="site-header">
   <div class="site-header__inner">
-    <a class="site-header__brand" href="/">Arpeteria</a>
+    <a class="site-header__brand" href="/">
+      <img class="site-header__logo" src="/logo/logo-256.png" alt="" width="36" height="36" />
+      Arpeteria
+    </a>
     <nav class="site-header__nav" aria-label="Navigation principale">
       {links.map((link) => <a href={link.href}>{link.label}</a>)}
     </nav>

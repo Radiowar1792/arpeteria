@@ -1,6 +1,21 @@
 ---
 const annee = new Date().getFullYear();
+const liens = [
+  { href: '/archives', label: 'Archives' },
+  { href: '/contemporain', label: 'Contemporain' },
+  { href: '/recommandations', label: 'Recommandations' },
+  { href: '/a-propos', label: 'À propos' },
+];
 ---
 <footer class="site-footer">
-  <p>© {annee} Arpeteria — bibliothèque numérique de la culture savoyarde (arpitane).</p>
+  <div class="site-footer__inner">
+    <img class="site-footer__logo" src="/logo/logo-256.png" alt="" width="40" height="40" />
+    <p class="site-footer__baseline">
+      Arpeteria — bibliothèque numérique de la culture savoyarde (arpitane).
+    </p>
+    <nav class="site-footer__nav" aria-label="Navigation du pied de page">
+      {liens.map((lien) => <a href={lien.href}>{lien.label}</a>)}
+    </nav>
+    <p class="site-footer__copyright">© {annee} Arpeteria</p>
+  </div>
 </footer>

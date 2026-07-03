@@ -18,7 +18,7 @@ const { categorie } = Astro.props;
 const oeuvres = await getOeuvres({ categorieSlug: categorie.slug });
 ---
 <Base title={categorie.nom} description={categorie.description ?? undefined}>
-  <main>
+  <main id="contenu-principal">
     <nav class="fil-ariane" aria-label="Fil d'Ariane">
       <a href="/">Accueil</a> › <a href="/contemporain">Contemporain</a>
     </nav>

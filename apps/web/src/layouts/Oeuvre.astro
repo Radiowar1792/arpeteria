@@ -16,7 +16,7 @@ const sectionLabel = oeuvre.section === 'archives' ? 'Archives' : 'Contemporain'
 ---
 <Base title={oeuvre.titre} description={oeuvre.description ?? undefined} image={image}>
   <SchemaOrg oeuvre={oeuvre} url={url} />
-  <main class="fiche-oeuvre">
+  <main id="contenu-principal" class="fiche-oeuvre">
     <nav class="fil-ariane" aria-label="Fil d'Ariane">
       <a href="/">Accueil</a> › <a href={`/${oeuvre.section}`}>{sectionLabel}</a>
       {oeuvre.categorie && (

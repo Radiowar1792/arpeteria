@@ -7,7 +7,7 @@ const section = SECTIONS.archives;
 const categories = await getCategories('archives');
 ---
 <Base title={section.label} description={section.description}>
-  <main>
+  <main id="contenu-principal">
     <h1>{section.label}</h1>
     <p>{section.description}</p>
     <ul class="grille-categories">

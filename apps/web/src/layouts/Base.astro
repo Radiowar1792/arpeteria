@@ -27,6 +27,8 @@ const canonical = canonicalUrl(Astro.url.pathname);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#171310" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
@@ -43,8 +45,41 @@ const canonical = canonicalUrl(Astro.url.pathname);
     <ClientRouter />
   </head>
   <body>
+    <a class="lien-evitement" href="#contenu-principal">Aller au contenu</a>
+    <div class="barre-progression" id="barre-progression"></div>
     <Header />
     <slot />
     <Footer />
+    <button
+      type="button"
+      class="bouton-haut"
+      id="bouton-haut"
+      aria-label="Retour en haut de page"
+    >
+      ↑
+    </button>
+    <script>
+      function initInteractionsPage() {
+        const barre = document.getElementById('barre-progression');
+        const boutonHaut = document.getElementById('bouton-haut');
+        if (!barre || !boutonHaut) return;
+
+        const onScroll = () => {
+          const hauteur = document.documentElement.scrollHeight - window.innerHeight;
+          const progres = hauteur > 0 ? (window.scrollY / hauteur) * 100 : 0;
+          barre.style.width = `${progres}%`;
+          boutonHaut.classList.toggle('bouton-haut--visible', window.scrollY > 480);
+        };
+
+        document.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+
+        boutonHaut.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+
+      document.addEventListener('astro:page-load', initInteractionsPage);
+    </script>
   </body>
 </html>
