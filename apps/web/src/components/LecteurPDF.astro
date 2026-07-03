@@ -8,6 +8,9 @@ const { fichierId } = Astro.props;
 const url = assetUrl(fichierId);
 ---
 <div class="lecteur-pdf">
-  <a class="bouton bouton--principal" href={url} target="_blank" rel="noopener">Consulter le PDF</a>
-  <a class="bouton bouton--secondaire" href={`${url}?download`} download>Télécharger</a>
+  <iframe class="lecteur-pdf__apercu" src={url} title="Aperçu du PDF" loading="lazy"></iframe>
+  <div class="lecteur-pdf__actions">
+    <a class="bouton bouton--principal" href={url} target="_blank" rel="noopener">Ouvrir en plein écran</a>
+    <a class="bouton bouton--secondaire" href={`${url}?download`} download>Télécharger</a>
+  </div>
 </div>

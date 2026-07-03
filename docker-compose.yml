@@ -47,6 +47,9 @@ services:
       PUBLIC_URL: ${DIRECTUS_PUBLIC_URL:-https://admin.arpeteria.fr}
       CORS_ENABLED: "true"
       CORS_ORIGIN: ${SITE_URL:-https://arpeteria.fr}
+      # Autorise le site (autre sous-domaine) à afficher les PDF en <iframe> (LecteurPDF.astro) :
+      # sans ça, Directus refuse par défaut l'affichage cross-origin dans une frame.
+      CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_ANCESTORS: "'self' ${SITE_URL:-https://arpeteria.fr}"
       FILES_MAX_UPLOAD_SIZE: 200mb
       CACHE_ENABLED: "true"
       CACHE_STORE: memory

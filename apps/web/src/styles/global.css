@@ -250,9 +250,19 @@ main {
 }
 
 .lecteur-pdf {
+  margin-top: 1.5rem;
+}
+
+.lecteur-pdf__apercu {
+  width: 100%;
+  height: 80vh;
+  border: 1px solid var(--arpeteria-bordure);
+}
+
+.lecteur-pdf__actions {
   display: flex;
   gap: 1rem;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
 }
 
 /* ── Recommandations ── */
