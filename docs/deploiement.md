@@ -160,6 +160,16 @@ Directus est maintenant joignable en local sur le VPS via `http://127.0.0.1:8055
 
 > ⚠️ Ne lance jamais `docker compose up -d --build` (sans préciser de service) à ce stade : ça tenterait aussi de builder `web`, qui a besoin de `DIRECTUS_STATIC_TOKEN` (pas encore généré, voir Étape 11) et de Directus déjà démarré. Utilise toujours la forme ciblée `docker compose up -d database directus caddy` jusqu'à l'Étape 12.
 
+### Étape 9bis — Corriger les permissions admin (bug connu Directus 11.17.4)
+
+Sur cette version de Directus, le compte admin créé automatiquement au premier démarrage (via `DIRECTUS_ADMIN_EMAIL`/`DIRECTUS_ADMIN_PASSWORD`) n'est parfois pas correctement relié à sa policy "Administrator" — il s'authentifie normalement mais reçoit `403 Forbidden` sur tout appel API (y compris `/collections`), ce qui bloque l'étape suivante. Lance ce script (idempotent, sans risque de le relancer) juste après le démarrage de Directus :
+
+```bash
+./scripts/fix-directus-admin-access.sh
+```
+
+Puis attends que Directus redémarre (`docker compose logs -f directus`, Ctrl+C une fois "Server started" réaffiché) avant de continuer.
+
 ## Étape 10 — Poser le schéma Directus et semer les catégories
 
 ```bash
@@ -258,5 +268,7 @@ docker system df
 | `docker compose up` échoue sur `web` (build) | Vérifier `DIRECTUS_STATIC_TOKEN` non vide dans `.env`, et que Directus tourne (`docker compose ps`) |
 | Le site est en ligne mais vide | Normal tant qu'aucune œuvre n'est publiée + reconstruite (voir Étape 13) |
 | `npm run bootstrap` échoue en `ECONNREFUSED` | Soit Directus n'est pas encore démarré/prêt (relancer `docker compose logs directus`, réessayer une fois "Server started" affiché), soit `DIRECTUS_ADMIN_URL` utilise `localhost` au lieu de `127.0.0.1` dans `.env` (Node résout `localhost` en `::1` sur Debian, non publié par Docker) |
+| `npm run bootstrap`/`npm run seed` échoue en `403 Forbidden` (`You don't have permission to access this`) | Bug de bootstrap Directus 11.17.4 : la policy admin n'est pas reliée au rôle. Lance `./scripts/fix-directus-admin-access.sh` (voir Étape 9bis), attends le redémarrage de Directus, puis relance |
+| `password authentication failed for user` dans les logs `directus` après un `docker compose down` (sans `-v`) puis `up` avec un `.env` modifié | Le volume `pgdata` garde l'ancien mot de passe (Postgres ne le change qu'à la toute première initialisation). Soit tu remets l'ancien `DB_PASSWORD`, soit `docker compose down -v` pour repartir sur un volume neuf cohérent avec le nouveau `.env` |
 | `docker compose up --build` échoue avec `network mode "web" not supported by buildkit` | Le build de `web` doit utiliser `network: host` (déjà configuré dans `docker-compose.yml`), pas un réseau bridge personnalisé — BuildKit ne le supporte pas. Si l'erreur persiste après un `git pull`, vérifie que `docker-compose.yml` contient bien `network: host` pour le service `web` |
 | Erreur de connexion admin Directus | Vérifier `DIRECTUS_ADMIN_EMAIL`/`DIRECTUS_ADMIN_PASSWORD` dans `.env`, redémarrer avec `docker compose up -d directus` |
