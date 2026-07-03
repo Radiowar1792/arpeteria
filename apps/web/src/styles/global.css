@@ -214,10 +214,55 @@ main {
   color: var(--arpeteria-rouge-clair);
 }
 
-.site-header__nav {
+/* ── Bascule menu mobile (hamburger) ── */
+.site-header__bascule {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.32rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.site-header__barre {
+  display: block;
+  width: 1.4rem;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--arpeteria-blanc);
+  transition: transform var(--transition-rapide), opacity var(--transition-rapide);
+}
+
+.site-header__bascule[aria-expanded='true'] .site-header__barre:nth-child(1) {
+  transform: translateY(0.46rem) rotate(45deg);
+}
+
+.site-header__bascule[aria-expanded='true'] .site-header__barre:nth-child(2) {
+  opacity: 0;
+}
+
+.site-header__bascule[aria-expanded='true'] .site-header__barre:nth-child(3) {
+  transform: translateY(-0.46rem) rotate(-45deg);
+}
+
+/* ── Navigation (accordéon tactile en mobile, ligne horizontale + survol au-delà de 60rem) ── */
+.site-header__nav {
+  flex-basis: 100%;
+  display: flex;
+  flex-direction: column;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--transition-douce);
+}
+
+.site-header__nav--ouvert {
+  max-height: 40rem;
 }
 
 .site-header__nav a {
@@ -225,98 +270,166 @@ main {
   color: var(--arpeteria-gris-clair);
   text-decoration: none;
   font-family: var(--police-interface);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 500;
-  padding: 0.2rem 0;
-}
-
-.site-header__nav a::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 100%;
-  bottom: -2px;
-  height: 2px;
-  background: var(--arpeteria-rouge-clair);
-  transition: right var(--transition-douce);
+  padding: 0.7rem 0.2rem;
 }
 
 .site-header__nav a:hover {
   color: var(--arpeteria-blanc);
 }
 
-.site-header__nav a:hover::after {
-  right: 0;
+/* ── Menu déroulant (Archives / Contemporain) ── */
+.menu-deroulant__ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-/* ── Menu déroulant (Archives / Contemporain) ── */
-.menu-deroulant {
-  position: relative;
+.menu-deroulant__bascule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  background: none;
+  border: none;
+  color: var(--arpeteria-gris-clair);
+  cursor: pointer;
 }
 
 .menu-deroulant__chevron {
-  width: 0.8rem;
-  height: 0.8rem;
-  margin-left: 0.15rem;
-  vertical-align: -0.05rem;
+  width: 1rem;
+  height: 1rem;
   transition: transform var(--transition-rapide);
 }
 
-.menu-deroulant:hover .menu-deroulant__chevron,
-.menu-deroulant:focus-within .menu-deroulant__chevron {
-  transform: rotate(-180deg);
+.menu-deroulant--ouvert .menu-deroulant__chevron {
+  transform: rotate(180deg);
 }
 
 .menu-deroulant__panneau {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  translate: -50% 0;
-  padding-top: 0.75rem;
-  min-width: 13rem;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--transition-rapide);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--transition-douce);
 }
 
-.menu-deroulant:hover .menu-deroulant__panneau,
-.menu-deroulant:focus-within .menu-deroulant__panneau {
-  opacity: 1;
-  pointer-events: auto;
+.menu-deroulant--ouvert .menu-deroulant__panneau {
+  max-height: 20rem;
 }
 
 .menu-deroulant__liste {
   list-style: none;
   margin: 0;
-  padding: 0.4rem;
-  background: var(--arpeteria-blanc);
-  border: 1px solid var(--arpeteria-bordure);
-  border-radius: 0.6rem;
-  box-shadow: var(--ombre-forte);
+  padding: 0 0 0.6rem 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .menu-deroulant__liste a {
   display: block;
-  padding: 0.55rem 0.75rem;
+  padding: 0.5rem 0.6rem;
   border-radius: 0.4rem;
-  color: var(--arpeteria-noir);
+  color: var(--arpeteria-gris-clair);
   font-family: var(--police-interface);
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.88rem;
   text-decoration: none;
-  white-space: nowrap;
   transition:
     background-color var(--transition-rapide),
     color var(--transition-rapide);
 }
 
 .menu-deroulant__liste a:hover {
-  background: var(--arpeteria-gris-clair);
-  color: var(--arpeteria-rouge);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--arpeteria-blanc);
 }
 
-.menu-deroulant__liste a::after {
-  content: none;
+/* ── Bureau : navigation en ligne, sous-menus au survol ── */
+@media (min-width: 60rem) {
+  .site-header__bascule {
+    display: none;
+  }
+
+  .site-header__nav {
+    flex-basis: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.5rem;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .site-header__nav a {
+    padding: 0.2rem 0;
+  }
+
+  .site-header__nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 100%;
+    bottom: -2px;
+    height: 2px;
+    background: var(--arpeteria-rouge-clair);
+    transition: right var(--transition-douce);
+  }
+
+  .site-header__nav a:hover::after {
+    right: 0;
+  }
+
+  .menu-deroulant {
+    position: relative;
+  }
+
+  .menu-deroulant__bascule {
+    display: none;
+  }
+
+  .menu-deroulant:hover .menu-deroulant__chevron,
+  .menu-deroulant:focus-within .menu-deroulant__chevron {
+    transform: rotate(180deg);
+  }
+
+  .menu-deroulant__panneau {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    translate: -50% 0;
+    padding-top: 0.75rem;
+    min-width: 13rem;
+    max-height: none;
+    overflow: visible;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-rapide);
+  }
+
+  .menu-deroulant:hover .menu-deroulant__panneau,
+  .menu-deroulant:focus-within .menu-deroulant__panneau {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .menu-deroulant__liste {
+    padding: 0.4rem;
+    background: var(--arpeteria-blanc);
+    border: 1px solid var(--arpeteria-bordure);
+    border-radius: 0.6rem;
+    box-shadow: var(--ombre-forte);
+  }
+
+  .menu-deroulant__liste a {
+    color: var(--arpeteria-noir);
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .menu-deroulant__liste a:hover {
+    background: var(--arpeteria-gris-clair);
+    color: var(--arpeteria-rouge);
+  }
 }
 
 /* ── Footer ── */

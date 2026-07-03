@@ -1,6 +1,7 @@
 ---
 import Base from './Base.astro';
 import SchemaOrg from '../components/SchemaOrg.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
 import LecteurPDF from '../components/LecteurPDF.astro';
 import LecteurVideo from '../components/LecteurVideo.astro';
 import LienExterne from '../components/LienExterne.astro';
@@ -14,9 +15,23 @@ const { oeuvre } = Astro.props;
 const url = canonicalUrl(`/oeuvre/${oeuvre.slug}`);
 const image = oeuvre.couverture ? assetUrl(oeuvre.couverture.id) : undefined;
 const sectionLabel = oeuvre.section === 'archives' ? 'Archives' : 'Contemporain';
+const filAriane = [
+  { name: 'Accueil', url: canonicalUrl('/') },
+  { name: sectionLabel, url: canonicalUrl(`/${oeuvre.section}`) },
+  ...(oeuvre.categorie
+    ? [
+        {
+          name: oeuvre.categorie.nom,
+          url: canonicalUrl(`/${oeuvre.section}/${oeuvre.categorie.slug}`),
+        },
+      ]
+    : []),
+  { name: oeuvre.titre, url },
+];
 ---
 <Base title={oeuvre.titre} description={oeuvre.description ?? undefined} image={image}>
   <SchemaOrg oeuvre={oeuvre} url={url} />
+  <BreadcrumbSchema items={filAriane} />
   <main id="contenu-principal" class="fiche-oeuvre">
     <nav class="fil-ariane" aria-label="Fil d'Ariane">
       <a href="/">Accueil</a> › <a href={`/${oeuvre.section}`}>{sectionLabel}</a>

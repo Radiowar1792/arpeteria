@@ -23,17 +23,38 @@ const liens = [
       <img class="site-header__logo" src="/logo/logo-256.png" alt="" width="36" height="36" />
       Arpeteria
     </a>
-    <nav class="site-header__nav" aria-label="Navigation principale">
+
+    <button
+      type="button"
+      class="site-header__bascule"
+      id="bascule-menu"
+      aria-expanded="false"
+      aria-controls="nav-principale"
+      aria-label="Ouvrir le menu"
+    >
+      <span class="site-header__barre"></span>
+      <span class="site-header__barre"></span>
+      <span class="site-header__barre"></span>
+    </button>
+
+    <nav class="site-header__nav" id="nav-principale" aria-label="Navigation principale">
       {menus.map((menu) => (
         <div class="menu-deroulant">
-          <a href={menu.href}>
-            {menu.label}
+          <div class="menu-deroulant__ligne">
+            <a href={menu.href}>{menu.label}</a>
             {menu.categories.length > 0 && (
-              <svg class="menu-deroulant__chevron" viewBox="0 0 24 24" aria-hidden="true">
-                <path fill="currentColor" d="M7 10l5 5 5-5H7Z" />
-              </svg>
+              <button
+                type="button"
+                class="menu-deroulant__bascule"
+                aria-expanded="false"
+                aria-label={`Afficher les catégories : ${menu.label}`}
+              >
+                <svg class="menu-deroulant__chevron" viewBox="0 0 24 24" aria-hidden="true">
+                  <path fill="currentColor" d="M7 10l5 5 5-5H7Z" />
+                </svg>
+              </button>
             )}
-          </a>
+          </div>
           {menu.categories.length > 0 && (
             <div class="menu-deroulant__panneau">
               <ul class="menu-deroulant__liste">
@@ -51,3 +72,41 @@ const liens = [
     </nav>
   </div>
 </header>
+
+<script>
+  function initHeader() {
+    const bascule = document.getElementById('bascule-menu');
+    const nav = document.getElementById('nav-principale');
+    const header = document.querySelector('.site-header');
+
+    if (bascule && nav && header && !bascule.dataset.pret) {
+      bascule.dataset.pret = 'true';
+
+      bascule.addEventListener('click', () => {
+        const ouvert = nav.classList.toggle('site-header__nav--ouvert');
+        bascule.setAttribute('aria-expanded', String(ouvert));
+      });
+
+      document.addEventListener('click', (evenement) => {
+        if (!header.contains(evenement.target as Node)) {
+          nav.classList.remove('site-header__nav--ouvert');
+          bascule.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    document.querySelectorAll<HTMLElement>('.menu-deroulant').forEach((menu) => {
+      if (menu.dataset.pret) return;
+      const boutonSousMenu = menu.querySelector<HTMLButtonElement>('.menu-deroulant__bascule');
+      if (!boutonSousMenu) return;
+      menu.dataset.pret = 'true';
+
+      boutonSousMenu.addEventListener('click', () => {
+        const ouvert = menu.classList.toggle('menu-deroulant--ouvert');
+        boutonSousMenu.setAttribute('aria-expanded', String(ouvert));
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initHeader);
+</script>

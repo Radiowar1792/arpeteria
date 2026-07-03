@@ -1,0 +1,13 @@
+---
+import { canonicalUrl } from '../lib/seo.ts';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Arpeteria',
+  url: canonicalUrl('/'),
+  logo: canonicalUrl('/logo/logo-512.png'),
+  description: 'Bibliothèque numérique de la culture savoyarde (arpitane).',
+};
+---
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

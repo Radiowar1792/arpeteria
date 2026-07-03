@@ -8,11 +8,13 @@ ARG DIRECTUS_PUBLIC_URL
 ARG DIRECTUS_STATIC_TOKEN
 ARG PUBLIC_UMAMI_URL
 ARG PUBLIC_UMAMI_WEBSITE_ID
+ARG SITE_URL
 ENV DIRECTUS_URL=${DIRECTUS_URL}
 ENV DIRECTUS_PUBLIC_URL=${DIRECTUS_PUBLIC_URL}
 ENV DIRECTUS_STATIC_TOKEN=${DIRECTUS_STATIC_TOKEN}
 ENV PUBLIC_UMAMI_URL=${PUBLIC_UMAMI_URL}
 ENV PUBLIC_UMAMI_WEBSITE_ID=${PUBLIC_UMAMI_WEBSITE_ID}
+ENV SITE_URL=${SITE_URL}
 # `npm run build` interroge Directus pour générer les pages statiques : son résultat dépend du
 # contenu de la base, pas seulement du code source. Sans cet ARG, Docker réutilise la couche de
 # cache de ce `RUN` tant qu'aucun fichier du repo n'a changé — donc publier une œuvre dans

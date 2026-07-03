@@ -82,6 +82,9 @@ services:
         DIRECTUS_URL: http://127.0.0.1:8055
         DIRECTUS_PUBLIC_URL: ${DIRECTUS_PUBLIC_URL:-https://admin.arpeteria.fr}
         DIRECTUS_STATIC_TOKEN: ${DIRECTUS_STATIC_TOKEN}
+        # URL canonique du site (sitemap, balises canonical/OG) — voir astro.config.mjs
+        # et lib/seo.ts, qui lisent la même variable.
+        SITE_URL: ${SITE_URL:-https://arpeteria.fr}
         # Script de suivi Umami (voir docs/deploiement.md, Étape 16) — laisser
         # UMAMI_WEBSITE_ID vide tant que le site n'est pas créé dans Umami : aucun script
         # n'est alors injecté.

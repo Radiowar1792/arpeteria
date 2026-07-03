@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import CarteOeuvre from '../components/CarteOeuvre.astro';
+import OrganizationSchema from '../components/OrganizationSchema.astro';
 import { getOeuvres, getCategories, getRecommandations } from '../lib/directus.ts';
 import { SECTIONS } from '../lib/taxonomies.ts';
 
@@ -20,6 +21,7 @@ const chiffres = [
 ];
 ---
 <Base title="Accueil">
+  <OrganizationSchema />
   <main id="contenu-principal">
     <section class="hero">
       <img class="hero__logo" src="/logo/logo-256.png" alt="" width="72" height="72" />

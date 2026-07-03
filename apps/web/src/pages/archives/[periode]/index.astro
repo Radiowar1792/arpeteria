@@ -1,7 +1,9 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import CarteOeuvre from '../../../components/CarteOeuvre.astro';
+import BreadcrumbSchema from '../../../components/BreadcrumbSchema.astro';
 import { getCategories, getOeuvres, type Categorie } from '../../../lib/directus.ts';
+import { canonicalUrl } from '../../../lib/seo.ts';
 
 export async function getStaticPaths() {
   const categories = await getCategories('archives');
@@ -16,8 +18,14 @@ interface Props {
 }
 const { categorie } = Astro.props;
 const oeuvres = await getOeuvres({ categorieSlug: categorie.slug });
+const filAriane = [
+  { name: 'Accueil', url: canonicalUrl('/') },
+  { name: 'Archives', url: canonicalUrl('/archives') },
+  { name: categorie.nom, url: canonicalUrl(`/archives/${categorie.slug}`) },
+];
 ---
 <Base title={categorie.nom} description={categorie.description ?? undefined}>
+  <BreadcrumbSchema items={filAriane} />
   <main id="contenu-principal">
     <nav class="fil-ariane" aria-label="Fil d'Ariane">
       <a href="/">Accueil</a> › <a href="/archives">Archives</a>
