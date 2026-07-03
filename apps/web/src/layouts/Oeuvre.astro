@@ -44,7 +44,7 @@ const sectionLabel = oeuvre.section === 'archives' ? 'Archives' : 'Contemporain'
     )}
 
     {oeuvre.type_media === 'pdf' && oeuvre.fichier_pdf && (
-      <LecteurPDF fichierId={oeuvre.fichier_pdf.id} />
+      <LecteurPDF fichierId={oeuvre.fichier_pdf.id} couvertureUrl={image} />
     )}
     {oeuvre.type_media !== 'pdf' && oeuvre.url_externe && (
       <LienExterne type={oeuvre.type_media} url={oeuvre.url_externe} />

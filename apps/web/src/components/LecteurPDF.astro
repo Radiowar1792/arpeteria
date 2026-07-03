@@ -3,14 +3,59 @@ import { assetUrl } from '../lib/directus.ts';
 
 interface Props {
   fichierId: string;
+  couvertureUrl?: string;
 }
-const { fichierId } = Astro.props;
+const { fichierId, couvertureUrl } = Astro.props;
 const url = assetUrl(fichierId);
 ---
-<div class="lecteur-pdf">
-  <iframe class="lecteur-pdf__apercu" src={url} title="Aperçu du PDF" loading="lazy"></iframe>
-  <div class="lecteur-pdf__actions">
-    <a class="bouton bouton--principal" href={url} target="_blank" rel="noopener">Ouvrir en plein écran</a>
-    <a class="bouton bouton--secondaire" href={`${url}?download`} download>Télécharger</a>
+<div class="lecteur-pdf" data-lecteur-pdf data-url={url}>
+  <div class="lecteur-pdf__barre">
+    <span class="lecteur-pdf__badge">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path
+        fill="currentColor"
+        d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6Zm7 1.5L18.5 9H14a1 1 0 0 1-1-1V3.5ZM8 13h2.2a2 2 0 1 1 0 4H9v2H8v-6Zm1 1v2h1.2a1 1 0 1 0 0-2H9Zm4-1h2c1.1 0 2 .9 2 2v2c0 1.1-.9 2-2 2h-2v-6Zm1 1v4h1a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1Zm5-1h3v1h-2v1.5h1.8V16H19V19h-1v-6Z"
+      /></svg>
+      PDF
+    </span>
+    <div class="lecteur-pdf__actions">
+      <a class="lecteur-pdf__action" href={url} target="_blank" rel="noopener">Plein écran</a>
+      <a class="lecteur-pdf__action" href={`${url}?download`} download>Télécharger</a>
+    </div>
+  </div>
+  <div class="lecteur-pdf__stage">
+    <button type="button" class="lecteur-pdf__declencheur" data-role="declencheur">
+      {couvertureUrl && <img class="lecteur-pdf__poster" src={couvertureUrl} alt="" loading="lazy" />}
+      <span class="lecteur-pdf__chip">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 5c-5.5 0-9.5 4.5-10 7 .5 2.5 4.5 7 10 7s9.5-4.5 10-7c-.5-2.5-4.5-7-10-7Zm0 11.5A4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 0 1 0 9Zm0-7a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z"/></svg>
+        Afficher l'aperçu du PDF
+      </span>
+    </button>
   </div>
 </div>
+
+<script>
+  function initLecteursPDF() {
+    document.querySelectorAll<HTMLElement>('[data-lecteur-pdf]').forEach((lecteur) => {
+      if (lecteur.dataset.pret) return;
+      const declencheur = lecteur.querySelector<HTMLButtonElement>('[data-role="declencheur"]');
+      const stage = lecteur.querySelector<HTMLElement>('.lecteur-pdf__stage');
+      const url = lecteur.dataset.url;
+      if (!declencheur || !stage || !url) return;
+      lecteur.dataset.pret = 'true';
+
+      declencheur.addEventListener('click', () => {
+        stage.classList.add('lecteur-pdf__stage--chargement', 'lecteur-pdf__stage--charge');
+        const cadre = document.createElement('iframe');
+        cadre.className = 'lecteur-pdf__cadre';
+        cadre.title = 'Aperçu du PDF';
+        cadre.addEventListener('load', () => {
+          stage.classList.remove('lecteur-pdf__stage--chargement');
+        });
+        stage.replaceChildren(cadre);
+        cadre.src = url;
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initLecteursPDF);
+</script>
