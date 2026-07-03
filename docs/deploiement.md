@@ -254,10 +254,25 @@ docker compose up -d directus
 **4. Crée le Flow dans Directus** (**Paramètres → Flows → Créer un flow**) :
 
 - **Déclencheur** : "Event Hook" → Type **"Action (Non-Blocking)"** → Actions : `items.create`,
-  `items.update`, `items.delete` → Collections : `oeuvres`, `categories`, `recommandations`.
-- **Opération** : "Webhook / Request URL" → Méthode `POST` → URL `http://host.docker.internal:9002/rebuild`
-  → Headers : `Authorization: Bearer <REBUILD_WEBHOOK_TOKEN>` (la même valeur que dans `.env`).
+  `items.update`, `items.delete` (ajoute aussi `items.promote`/`items.sort` si tu veux réordonner
+  sans republier manuellement) → Collections : `oeuvres`, `categories`, `recommandations`.
+- **Opération** : "Webhook / Request URL" → Méthode `POST` → URL exactement
+  `http://host.docker.internal:9002/rebuild` (⚠️ pas d'espace avant/après, un espace en trop suffit
+  à faire échouer la requête en 404).
+  → Ajoute un header `Authorization`. Dans le champ **valeur** de ce header, tape le mot
+  **`Bearer`**, un espace, puis le token — soit exactement (en remplaçant par ton propre token) :
+  ```
+  Bearer 93037fd17d8fbe54802dfa94afdd8c20507e282610f5396f2f7f926ae5a96cbe
+  ```
+  ⚠️ Piège fréquent : mettre uniquement le token sans le préfixe `Bearer ` devant → le service
+  répond alors `401 Unauthorized` / `Token invalide`, alors même que le token est correct.
 - Active le flow.
+
+Pour vérifier que tout est bon en une commande, avant même de passer par l'UI Directus :
+```bash
+curl -i -X POST http://127.0.0.1:9002/rebuild -H "Authorization: Bearer $(grep REBUILD_WEBHOOK_TOKEN .env | cut -d= -f2)"
+```
+Doit répondre `202 Accepted`.
 
 **5. Teste** : publie/modifie une œuvre, puis observe les logs du service pendant qu'il rebuild :
 
@@ -315,5 +330,7 @@ docker system df
 | `password authentication failed for user` dans les logs `directus` après un `docker compose down` (sans `-v`) puis `up` avec un `.env` modifié | Le volume `pgdata` garde l'ancien mot de passe (Postgres ne le change qu'à la toute première initialisation). Soit tu remets l'ancien `DB_PASSWORD`, soit `docker compose down -v` pour repartir sur un volume neuf cohérent avec le nouveau `.env` |
 | `docker compose up --build` échoue avec `network mode "web" not supported by buildkit` | Le build de `web` doit utiliser `network: host` (déjà configuré dans `docker-compose.yml`), pas un réseau bridge personnalisé — BuildKit ne le supporte pas. Si l'erreur persiste après un `git pull`, vérifie que `docker-compose.yml` contient bien `network: host` pour le service `web` |
 | Une œuvre publiée dans Directus n'apparaît pas sur le site après `docker compose up -d --build web` | Docker a réutilisé le cache du build précédent (aucun fichier du repo n'a changé, donc `RUN npm run build` n'a pas été relancé). Toujours préfixer par `CACHEBUST=$(date +%s)` (voir Étape 12) |
-| Le rebuild automatique (Étape 13bis) ne se déclenche pas | Vérifie dans l'ordre : `systemctl status arpeteria-rebuild-webhook` (doit être actif), `docker compose up -d directus` a bien été relancé après l'ajout d'`extra_hosts`, le jeton dans le Flow correspond à `REBUILD_WEBHOOK_TOKEN` dans `.env`, et que le Flow est bien activé et scope sur `oeuvres`/`categories`/`recommandations` |
+| Le rebuild automatique (Étape 13bis) échoue en `404` dans le log d'exécution du Flow | Espace en trop dans le champ URL de l'opération webhook (`.../rebuild ` au lieu de `.../rebuild`) |
+| Le rebuild automatique (Étape 13bis) échoue en `401` / `Token invalide` dans le log d'exécution du Flow | Le header `Authorization` du Flow ne contient que le token, sans le préfixe `Bearer ` devant — la valeur doit être `Bearer <token>` |
+| Le rebuild automatique (Étape 13bis) ne se déclenche pas du tout (aucune entrée dans le log du Flow) | Vérifie dans l'ordre : `systemctl status arpeteria-rebuild-webhook` (doit être actif), `docker compose up -d directus` a bien été relancé après l'ajout d'`extra_hosts`, et que le Flow est bien activé et scope sur `oeuvres`/`categories`/`recommandations` |
 | Erreur de connexion admin Directus | Vérifier `DIRECTUS_ADMIN_EMAIL`/`DIRECTUS_ADMIN_PASSWORD` dans `.env`, redémarrer avec `docker compose up -d directus` |
