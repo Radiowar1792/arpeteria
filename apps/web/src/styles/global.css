@@ -812,80 +812,8 @@ main {
 
 .lecteur-pdf__stage {
   position: relative;
-  height: 22rem;
-  background: var(--arpeteria-gris-clair);
-  transition: height var(--transition-douce);
-}
-
-.lecteur-pdf__stage--charge {
   height: 80vh;
-}
-
-.lecteur-pdf__declencheur {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  padding: 0;
-  margin: 0;
-  cursor: pointer;
-  background: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--arpeteria-noir) 70%, transparent),
-    color-mix(in srgb, var(--arpeteria-rouge-fonce) 65%, transparent)
-  );
-}
-
-.lecteur-pdf__poster {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: blur(3px) brightness(0.5) saturate(1.1);
-  transition: transform var(--transition-douce);
-}
-
-.lecteur-pdf__declencheur:hover .lecteur-pdf__poster {
-  transform: scale(1.04);
-}
-
-.lecteur-pdf__chip {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-family: var(--police-interface);
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: var(--arpeteria-noir);
-  background: var(--arpeteria-blanc);
-  padding: 0.75rem 1.25rem;
-  border-radius: 3rem;
-  box-shadow: var(--ombre-forte);
-  transition:
-    transform var(--transition-rapide),
-    background-color var(--transition-rapide);
-}
-
-.lecteur-pdf__chip svg {
-  width: 1.15rem;
-  height: 1.15rem;
-  color: var(--arpeteria-rouge);
-}
-
-.lecteur-pdf__declencheur:hover .lecteur-pdf__chip {
-  transform: scale(1.04);
-  background: var(--arpeteria-rouge);
-  color: var(--arpeteria-blanc);
-}
-
-.lecteur-pdf__declencheur:hover .lecteur-pdf__chip svg {
-  color: var(--arpeteria-blanc);
+  background: var(--arpeteria-gris-clair);
 }
 
 .lecteur-pdf__stage--chargement .lecteur-pdf__cadre {

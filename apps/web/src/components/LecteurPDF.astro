@@ -3,12 +3,11 @@ import { assetUrl } from '../lib/directus.ts';
 
 interface Props {
   fichierId: string;
-  couvertureUrl?: string;
 }
-const { fichierId, couvertureUrl } = Astro.props;
+const { fichierId } = Astro.props;
 const url = assetUrl(fichierId);
 ---
-<div class="lecteur-pdf" data-lecteur-pdf data-url={url}>
+<div class="lecteur-pdf">
   <div class="lecteur-pdf__barre">
     <span class="lecteur-pdf__badge">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path
@@ -22,40 +21,12 @@ const url = assetUrl(fichierId);
       <a class="lecteur-pdf__action" href={`${url}?download`} download>Télécharger</a>
     </div>
   </div>
-  <div class="lecteur-pdf__stage">
-    <button type="button" class="lecteur-pdf__declencheur" data-role="declencheur">
-      {couvertureUrl && <img class="lecteur-pdf__poster" src={couvertureUrl} alt="" loading="lazy" />}
-      <span class="lecteur-pdf__chip">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 5c-5.5 0-9.5 4.5-10 7 .5 2.5 4.5 7 10 7s9.5-4.5 10-7c-.5-2.5-4.5-7-10-7Zm0 11.5A4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 0 1 0 9Zm0-7a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z"/></svg>
-        Afficher l'aperçu du PDF
-      </span>
-    </button>
+  <div class="lecteur-pdf__stage lecteur-pdf__stage--chargement">
+    <iframe
+      class="lecteur-pdf__cadre"
+      src={url}
+      title="Aperçu du PDF"
+      onload="this.parentElement.classList.remove('lecteur-pdf__stage--chargement')"
+    ></iframe>
   </div>
 </div>
-
-<script>
-  function initLecteursPDF() {
-    document.querySelectorAll<HTMLElement>('[data-lecteur-pdf]').forEach((lecteur) => {
-      if (lecteur.dataset.pret) return;
-      const declencheur = lecteur.querySelector<HTMLButtonElement>('[data-role="declencheur"]');
-      const stage = lecteur.querySelector<HTMLElement>('.lecteur-pdf__stage');
-      const url = lecteur.dataset.url;
-      if (!declencheur || !stage || !url) return;
-      lecteur.dataset.pret = 'true';
-
-      declencheur.addEventListener('click', () => {
-        stage.classList.add('lecteur-pdf__stage--chargement', 'lecteur-pdf__stage--charge');
-        const cadre = document.createElement('iframe');
-        cadre.className = 'lecteur-pdf__cadre';
-        cadre.title = 'Aperçu du PDF';
-        cadre.addEventListener('load', () => {
-          stage.classList.remove('lecteur-pdf__stage--chargement');
-        });
-        stage.replaceChildren(cadre);
-        cadre.src = url;
-      });
-    });
-  }
-
-  document.addEventListener('astro:page-load', initLecteursPDF);
-</script>
