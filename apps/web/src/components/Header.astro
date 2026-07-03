@@ -1,7 +1,17 @@
 ---
-const links = [
-  { href: '/archives', label: 'Archives' },
-  { href: '/contemporain', label: 'Contemporain' },
+import { getCategories } from '../lib/directus.ts';
+
+const [categoriesArchives, categoriesContemporain] = await Promise.all([
+  getCategories('archives'),
+  getCategories('contemporain'),
+]);
+
+const menus = [
+  { href: '/archives', label: 'Archives', categories: categoriesArchives },
+  { href: '/contemporain', label: 'Contemporain', categories: categoriesContemporain },
+];
+
+const liens = [
   { href: '/recommandations', label: 'Recommandations' },
   { href: '/recherche', label: 'Recherche' },
   { href: '/a-propos', label: 'À propos' },
@@ -14,7 +24,30 @@ const links = [
       Arpeteria
     </a>
     <nav class="site-header__nav" aria-label="Navigation principale">
-      {links.map((link) => <a href={link.href}>{link.label}</a>)}
+      {menus.map((menu) => (
+        <div class="menu-deroulant">
+          <a href={menu.href}>
+            {menu.label}
+            {menu.categories.length > 0 && (
+              <svg class="menu-deroulant__chevron" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="currentColor" d="M7 10l5 5 5-5H7Z" />
+              </svg>
+            )}
+          </a>
+          {menu.categories.length > 0 && (
+            <div class="menu-deroulant__panneau">
+              <ul class="menu-deroulant__liste">
+                {menu.categories.map((categorie) => (
+                  <li>
+                    <a href={`${menu.href}/${categorie.slug}`}>{categorie.nom}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      ))}
+      {liens.map((lien) => <a href={lien.href}>{lien.label}</a>)}
     </nav>
   </div>
 </header>
