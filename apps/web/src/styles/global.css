@@ -1459,3 +1459,108 @@ main {
   padding-top: 2.5rem;
   border-top: 1px solid var(--arpeteria-bordure);
 }
+
+/* ── Frise chronologique (Archives) ── */
+.frise {
+  list-style: none;
+  margin: 3rem 0 1rem;
+  padding: 0;
+  position: relative;
+}
+
+.frise::before {
+  content: '';
+  position: absolute;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  width: 2px;
+  background: var(--arpeteria-bordure);
+}
+
+.frise__etape {
+  position: relative;
+  padding-left: 2.5rem;
+  margin-bottom: 1.5rem;
+  animation: entree-douce var(--transition-douce) both;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .frise__etape:nth-child(2) {
+    animation-delay: 60ms;
+  }
+  .frise__etape:nth-child(3) {
+    animation-delay: 120ms;
+  }
+  .frise__etape:nth-child(4) {
+    animation-delay: 180ms;
+  }
+  .frise__etape:nth-child(n + 5) {
+    animation-delay: 240ms;
+  }
+}
+
+.frise__marqueur {
+  position: absolute;
+  top: 1.6rem;
+  left: 0.1rem;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  background: var(--arpeteria-rouge);
+  border: 3px solid var(--arpeteria-blanc);
+  box-shadow: 0 0 0 2px var(--arpeteria-bordure);
+  transition:
+    transform var(--transition-rapide),
+    background-color var(--transition-rapide),
+    box-shadow var(--transition-rapide);
+}
+
+.frise__carte {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 1.25rem 1.5rem;
+  background: var(--arpeteria-blanc);
+  border: 1px solid var(--arpeteria-bordure);
+  border-radius: 0.75rem;
+  transition:
+    transform var(--transition-douce),
+    box-shadow var(--transition-douce),
+    border-color var(--transition-douce);
+}
+
+.frise__carte:hover {
+  transform: translateX(0.35rem);
+  box-shadow: var(--ombre-forte);
+  border-color: var(--arpeteria-rouge-clair);
+}
+
+.frise__carte:hover .frise__marqueur {
+  transform: scale(1.2);
+  background: var(--arpeteria-rouge-fonce);
+  box-shadow: 0 0 0 2px var(--arpeteria-rouge-clair);
+}
+
+.frise__carte h2 {
+  color: var(--arpeteria-rouge);
+  margin: 0 0 0.4rem;
+  font-size: 1.25rem;
+  transition: color var(--transition-rapide);
+}
+
+.frise__carte p {
+  color: var(--arpeteria-gris);
+  margin: 0 0 0.75rem;
+}
+
+.frise__nombre {
+  display: inline-block;
+  font-family: var(--police-interface);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--arpeteria-gris);
+  background: var(--arpeteria-gris-clair);
+  padding: 0.25rem 0.7rem;
+  border-radius: 3rem;
+}

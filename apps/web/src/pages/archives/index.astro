@@ -1,24 +1,42 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getCategories } from '../../lib/directus.ts';
+import { getCategories, getOeuvres } from '../../lib/directus.ts';
 import { SECTIONS } from '../../lib/taxonomies.ts';
 
 const section = SECTIONS.archives;
-const categories = await getCategories('archives');
+const [categories, oeuvres] = await Promise.all([
+  getCategories('archives'),
+  getOeuvres({ section: 'archives' }),
+]);
+
+const nombreParCategorie = new Map<string, number>();
+for (const oeuvre of oeuvres) {
+  if (!oeuvre.categorie) continue;
+  nombreParCategorie.set(oeuvre.categorie.slug, (nombreParCategorie.get(oeuvre.categorie.slug) ?? 0) + 1);
+}
 ---
 <Base title={section.label} description={section.description}>
   <main id="contenu-principal">
+    <p class="kicker">Parcourir par période</p>
     <h1>{section.label}</h1>
     <p>{section.description}</p>
-    <ul class="grille-categories">
-      {categories.map((categorie) => (
-        <li>
-          <a href={`/archives/${categorie.slug}`}>
-            <h2>{categorie.nom}</h2>
-            {categorie.description && <p>{categorie.description}</p>}
-          </a>
-        </li>
-      ))}
-    </ul>
+
+    <ol class="frise">
+      {categories.map((categorie) => {
+        const nombre = nombreParCategorie.get(categorie.slug) ?? 0;
+        return (
+          <li class="frise__etape">
+            <a class="frise__carte" href={`/archives/${categorie.slug}`}>
+              <span class="frise__marqueur" aria-hidden="true"></span>
+              <h2>{categorie.nom}</h2>
+              {categorie.description && <p>{categorie.description}</p>}
+              <span class="frise__nombre">
+                {nombre} {nombre > 1 ? 'œuvres' : 'œuvre'}
+              </span>
+            </a>
+          </li>
+        );
+      })}
+    </ol>
   </main>
 </Base>
