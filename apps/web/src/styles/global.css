@@ -1545,7 +1545,6 @@ main {
 }
 
 .frise__carte:hover .frise__marqueur {
-  transform: scale(1.12) rotate(-6deg);
   border-color: var(--arpeteria-rouge);
   box-shadow: 0 0 0 4px var(--arpeteria-gris-perle), var(--ombre-forte);
 }
@@ -1566,7 +1565,7 @@ main {
 }
 
 .frise__carte:hover {
-  transform: translateX(0.35rem);
+  transform: translateY(-3px);
   box-shadow: var(--ombre-forte);
   border-color: var(--arpeteria-rouge-clair);
   border-left-color: var(--arpeteria-rouge);
