@@ -189,9 +189,14 @@ nano .env   # DIRECTUS_STATIC_TOKEN=le_token_copié
 ## Étape 12 — Construire et démarrer le site
 
 ```bash
-docker compose up -d --build web
+CACHEBUST=$(date +%s) docker compose up -d --build web
 docker compose ps
 ```
+
+> ⚠️ Toujours préfixer par `CACHEBUST=$(date +%s)` (voir `Dockerfile`/`docker-compose.yml`) : le
+> build interroge Directus pour générer les pages, mais Docker ne le sait pas — sans ce préfixe,
+> tant qu'aucun fichier du repo n'a changé, Docker réutilise la couche de cache du build précédent
+> et **ressert l'ancien contenu**, même après avoir publié une nouvelle œuvre dans Directus.
 
 Vérifie que tout tourne :
 
@@ -210,7 +215,7 @@ Tant que l'automatisation (Flow Directus → CI/CD, prévue en Phase 3) n'est pa
 2. Sur le VPS :
    ```bash
    cd ~/arpeteria
-   docker compose up -d --build web
+   CACHEBUST=$(date +%s) docker compose up -d --build web
    ```
 
 ## Étape 14 — Sauvegardes
@@ -238,7 +243,7 @@ docker compose logs -f [service]
 
 # Mettre à jour le code
 git pull
-docker compose up -d --build web
+CACHEBUST=$(date +%s) docker compose up -d --build web
 
 # Mettre à jour les images Docker (Directus, Postgres, Caddy)
 docker compose pull
@@ -260,4 +265,5 @@ docker system df
 | `npm run bootstrap` échoue en `ECONNREFUSED` | Soit Directus n'est pas encore démarré/prêt (relancer `docker compose logs directus`, réessayer une fois "Server started" affiché), soit `DIRECTUS_ADMIN_URL` utilise `localhost` au lieu de `127.0.0.1` dans `.env` (Node résout `localhost` en `::1` sur Debian, non publié par Docker) |
 | `password authentication failed for user` dans les logs `directus` après un `docker compose down` (sans `-v`) puis `up` avec un `.env` modifié | Le volume `pgdata` garde l'ancien mot de passe (Postgres ne le change qu'à la toute première initialisation). Soit tu remets l'ancien `DB_PASSWORD`, soit `docker compose down -v` pour repartir sur un volume neuf cohérent avec le nouveau `.env` |
 | `docker compose up --build` échoue avec `network mode "web" not supported by buildkit` | Le build de `web` doit utiliser `network: host` (déjà configuré dans `docker-compose.yml`), pas un réseau bridge personnalisé — BuildKit ne le supporte pas. Si l'erreur persiste après un `git pull`, vérifie que `docker-compose.yml` contient bien `network: host` pour le service `web` |
+| Une œuvre publiée dans Directus n'apparaît pas sur le site après `docker compose up -d --build web` | Docker a réutilisé le cache du build précédent (aucun fichier du repo n'a changé, donc `RUN npm run build` n'a pas été relancé). Toujours préfixer par `CACHEBUST=$(date +%s)` (voir Étape 12) |
 | Erreur de connexion admin Directus | Vérifier `DIRECTUS_ADMIN_EMAIL`/`DIRECTUS_ADMIN_PASSWORD` dans `.env`, redémarrer avec `docker compose up -d directus` |

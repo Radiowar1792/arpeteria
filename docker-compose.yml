@@ -77,6 +77,10 @@ services:
         DIRECTUS_URL: http://127.0.0.1:8055
         DIRECTUS_PUBLIC_URL: ${DIRECTUS_PUBLIC_URL:-https://admin.arpeteria.fr}
         DIRECTUS_STATIC_TOKEN: ${DIRECTUS_STATIC_TOKEN}
+        # Change à chaque publication pour forcer Docker à relancer `npm run build` (donc à
+        # requêter Directus à nouveau) plutôt que de resservir la couche de cache précédente.
+        # Voir docs/deploiement.md — ne pas lancer `docker compose up -d --build web` sans ça.
+        CACHEBUST: ${CACHEBUST:-1}
     restart: unless-stopped
     depends_on: [directus]
     networks: [web]
