@@ -26,9 +26,16 @@ const sectionLabel = oeuvre.section === 'archives' ? 'Archives' : 'Contemporain'
       )}
     </nav>
 
-    {image && <img class="fiche-oeuvre__couverture" src={image} alt="" />}
+    {image && (
+      <img
+        class="fiche-oeuvre__couverture"
+        src={image}
+        alt=""
+        transition:name={`couverture-${oeuvre.id}`}
+      />
+    )}
 
-    <h1>{oeuvre.titre}</h1>
+    <h1 transition:name={`titre-${oeuvre.id}`}>{oeuvre.titre}</h1>
     {oeuvre.auteur && <p class="fiche-oeuvre__auteur">{oeuvre.auteur}</p>}
     {oeuvre.date_oeuvre && <p class="fiche-oeuvre__date">{oeuvre.date_oeuvre}</p>}
 

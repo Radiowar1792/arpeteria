@@ -12,8 +12,10 @@ import Base from '../layouts/Base.astro';
   <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
   <script src="/pagefind/pagefind-ui.js" is:inline></script>
   <script is:inline>
-    window.addEventListener('DOMContentLoaded', () => {
-      if (window.PagefindUI) {
+    document.addEventListener('astro:page-load', () => {
+      const cible = document.querySelector('#recherche');
+      if (cible && window.PagefindUI) {
+        cible.innerHTML = '';
         new window.PagefindUI({ element: '#recherche', showSubResults: true });
       }
     });
