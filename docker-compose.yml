@@ -53,6 +53,10 @@ services:
       FILES_MAX_UPLOAD_SIZE: 200mb
       CACHE_ENABLED: "true"
       CACHE_STORE: memory
+      # Sans ça (false par défaut), les écritures ne vident pas le cache : les
+      # changements mettent jusqu'au TTL du cache à se refléter, y compris dans
+      # l'UI Directus elle-même (qui interroge la même API mise en cache).
+      CACHE_AUTO_PURGE: "true"
     networks: [internal, web]
 
   # ───────────────────────── Site statique (Astro) ─────────────────────────
