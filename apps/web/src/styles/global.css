@@ -195,22 +195,36 @@ main {
 .site-header__brand {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  font-family: var(--police-editorial);
-  font-weight: 700;
-  font-size: 1.5rem;
-  color: var(--arpeteria-blanc);
+  gap: 0.7rem;
   text-decoration: none;
-  letter-spacing: 0.01em;
-  transition: color var(--transition-rapide);
+  transition: transform var(--transition-rapide);
+}
+
+.site-header__brand:hover {
+  transform: translateY(-1px);
 }
 
 .site-header__logo {
   display: block;
   border-radius: 50%;
+  filter: drop-shadow(0 2px 6px rgba(181, 18, 27, 0.5));
+  transition: transform var(--transition-douce);
 }
 
-.site-header__brand:hover {
+.site-header__brand:hover .site-header__logo {
+  transform: rotate(-8deg) scale(1.05);
+}
+
+.site-header__nom {
+  font-family: var(--police-editorial);
+  font-weight: 700;
+  font-size: 1.7rem;
+  letter-spacing: 0.01em;
+  color: var(--arpeteria-blanc);
+  transition: color var(--transition-rapide);
+}
+
+.site-header__brand:hover .site-header__nom {
   color: var(--arpeteria-rouge-clair);
 }
 
@@ -490,12 +504,30 @@ main {
   animation: entree-douce var(--transition-douce) both;
 }
 
-.hero__logo {
-  margin-bottom: 1rem;
+.hero__marque {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.1rem;
+  margin-bottom: 0.75rem;
 }
 
-.hero h1 {
-  margin-bottom: 0.6rem;
+.hero__logo {
+  flex-shrink: 0;
+  filter: drop-shadow(0 10px 20px rgba(181, 18, 27, 0.3));
+}
+
+.hero__nom {
+  font-family: var(--police-editorial);
+  font-weight: 700;
+  font-size: clamp(3rem, 2.1rem + 4.5vw, 5.25rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin: 0;
+  background: linear-gradient(135deg, var(--arpeteria-noir) 20%, var(--arpeteria-rouge) 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .hero p {
@@ -554,6 +586,10 @@ main {
   letter-spacing: 0.08em;
   color: var(--arpeteria-rouge);
   margin: 0 0 0.5rem;
+}
+
+.kicker--centre {
+  text-align: center;
 }
 
 /* ── Mission ── */
