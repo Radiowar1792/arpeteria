@@ -8,6 +8,8 @@
   --arpeteria-gris-perle: #faf7f4;
   --arpeteria-gris: #6b625c;
   --arpeteria-bordure: #e3dad4;
+  --arpeteria-or: #a9812e;
+  --arpeteria-or-clair: #d4b872;
 
   --police-editorial: 'Fraunces', 'Iowan Old Style', 'Georgia', serif;
   --police-interface: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -1460,10 +1462,20 @@ main {
   border-top: 1px solid var(--arpeteria-bordure);
 }
 
+
 /* ── Frise chronologique (Archives) ── */
+.frise__fleuron {
+  text-align: center;
+  color: var(--arpeteria-or);
+  font-size: 1.1rem;
+  margin: 1.5rem 0;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+}
+
 .frise {
   list-style: none;
-  margin: 3rem 0 1rem;
+  margin: 1.5rem 0 1rem;
   padding: 0;
   position: relative;
 }
@@ -1471,17 +1483,24 @@ main {
 .frise::before {
   content: '';
   position: absolute;
-  top: 0.5rem;
-  bottom: 0.5rem;
-  left: 0.5rem;
-  width: 2px;
-  background: var(--arpeteria-bordure);
+  top: 0;
+  bottom: 0;
+  left: 1.15rem;
+  width: 3px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--arpeteria-or-clair) 6%,
+    var(--arpeteria-bordure) 50%,
+    var(--arpeteria-or-clair) 94%,
+    transparent
+  );
 }
 
 .frise__etape {
   position: relative;
-  padding-left: 2.5rem;
-  margin-bottom: 1.5rem;
+  padding-left: 3.5rem;
+  margin-bottom: 1.75rem;
   animation: entree-douce var(--transition-douce) both;
 }
 
@@ -1502,28 +1521,44 @@ main {
 
 .frise__marqueur {
   position: absolute;
-  top: 1.6rem;
-  left: 0.1rem;
-  width: 0.8rem;
-  height: 0.8rem;
+  top: 1.1rem;
+  left: 0;
+  width: 2.3rem;
+  height: 2.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 50%;
-  background: var(--arpeteria-rouge);
-  border: 3px solid var(--arpeteria-blanc);
-  box-shadow: 0 0 0 2px var(--arpeteria-bordure);
+  background: var(--arpeteria-blanc);
+  border: 2px solid var(--arpeteria-or);
+  box-shadow: 0 0 0 4px var(--arpeteria-gris-perle), var(--ombre-douce);
   transition:
     transform var(--transition-rapide),
-    background-color var(--transition-rapide),
+    border-color var(--transition-rapide),
     box-shadow var(--transition-rapide);
+}
+
+.frise__marqueur img {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+}
+
+.frise__carte:hover .frise__marqueur {
+  transform: scale(1.12) rotate(-6deg);
+  border-color: var(--arpeteria-rouge);
+  box-shadow: 0 0 0 4px var(--arpeteria-gris-perle), var(--ombre-forte);
 }
 
 .frise__carte {
   display: block;
   text-decoration: none;
   color: inherit;
-  padding: 1.25rem 1.5rem;
-  background: var(--arpeteria-blanc);
+  padding: 1.4rem 1.6rem;
+  background: linear-gradient(155deg, var(--arpeteria-blanc), var(--arpeteria-gris-perle));
   border: 1px solid var(--arpeteria-bordure);
-  border-radius: 0.75rem;
+  border-left: 3px solid var(--arpeteria-or-clair);
+  border-radius: 0.25rem 0.75rem 0.75rem 0.25rem;
   transition:
     transform var(--transition-douce),
     box-shadow var(--transition-douce),
@@ -1534,18 +1569,15 @@ main {
   transform: translateX(0.35rem);
   box-shadow: var(--ombre-forte);
   border-color: var(--arpeteria-rouge-clair);
-}
-
-.frise__carte:hover .frise__marqueur {
-  transform: scale(1.2);
-  background: var(--arpeteria-rouge-fonce);
-  box-shadow: 0 0 0 2px var(--arpeteria-rouge-clair);
+  border-left-color: var(--arpeteria-rouge);
 }
 
 .frise__carte h2 {
   color: var(--arpeteria-rouge);
   margin: 0 0 0.4rem;
-  font-size: 1.25rem;
+  font-size: 1.3rem;
+  font-variant-caps: small-caps;
+  letter-spacing: 0.02em;
   transition: color var(--transition-rapide);
 }
 
@@ -1555,11 +1587,13 @@ main {
 }
 
 .frise__nombre {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   font-family: var(--police-interface);
   font-size: 0.78rem;
   font-weight: 600;
-  color: var(--arpeteria-gris);
+  color: var(--arpeteria-or);
   background: var(--arpeteria-gris-clair);
   padding: 0.25rem 0.7rem;
   border-radius: 3rem;

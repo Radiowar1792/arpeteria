@@ -21,13 +21,16 @@ for (const oeuvre of oeuvres) {
     <h1>{section.label}</h1>
     <p>{section.description}</p>
 
+    <p class="frise__fleuron" aria-hidden="true">✦</p>
     <ol class="frise">
       {categories.map((categorie) => {
         const nombre = nombreParCategorie.get(categorie.slug) ?? 0;
         return (
           <li class="frise__etape">
             <a class="frise__carte" href={`/archives/${categorie.slug}`}>
-              <span class="frise__marqueur" aria-hidden="true"></span>
+              <span class="frise__marqueur" aria-hidden="true">
+                <img src="/logo/logo-256.png" alt="" width="26" height="26" loading="lazy" />
+              </span>
               <h2>{categorie.nom}</h2>
               {categorie.description && <p>{categorie.description}</p>}
               <span class="frise__nombre">
@@ -38,5 +41,6 @@ for (const oeuvre of oeuvres) {
         );
       })}
     </ol>
+    <p class="frise__fleuron" aria-hidden="true">✦</p>
   </main>
 </Base>
