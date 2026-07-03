@@ -82,6 +82,11 @@ services:
         DIRECTUS_URL: http://127.0.0.1:8055
         DIRECTUS_PUBLIC_URL: ${DIRECTUS_PUBLIC_URL:-https://admin.arpeteria.fr}
         DIRECTUS_STATIC_TOKEN: ${DIRECTUS_STATIC_TOKEN}
+        # Script de suivi Umami (voir docs/deploiement.md, Étape 16) — laisser
+        # UMAMI_WEBSITE_ID vide tant que le site n'est pas créé dans Umami : aucun script
+        # n'est alors injecté.
+        PUBLIC_UMAMI_URL: ${UMAMI_PUBLIC_URL:-https://stats.arpeteria.fr}
+        PUBLIC_UMAMI_WEBSITE_ID: ${UMAMI_WEBSITE_ID:-}
         # Change à chaque publication pour forcer Docker à relancer `npm run build` (donc à
         # requêter Directus à nouveau) plutôt que de resservir la couche de cache précédente.
         # Voir docs/deploiement.md — ne pas lancer `docker compose up -d --build web` sans ça.
@@ -94,6 +99,39 @@ services:
       # tant qu'on ne passe pas par le "caddy" de ce repo. En prod avec Caddy en façade
       # unique (voir docs/deploiement.md), retirer ce bloc "ports".
       - "8080:80"
+
+  # ───────────────────────── Umami — statistiques du site ─────────────────────────
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    restart: unless-stopped
+    ports:
+      # ⚠️ Ouvert sur toutes les interfaces pour qu'un reverse proxy externe (ex. Nginx
+      # Proxy Manager) puisse router un sous-domaine dessus, comme pour web/directus.
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://umami:${UMAMI_DB_PASSWORD}@umami-database:5432/umami
+      DATABASE_TYPE: postgresql
+      APP_SECRET: ${UMAMI_APP_SECRET}
+    depends_on:
+      umami-database:
+        condition: service_healthy
+    networks: [umami]
+
+  umami-database:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - umami_pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: ${UMAMI_DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U umami -d umami"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [umami]
 
   # ───────────────────────── Reverse proxy ─────────────────────────
   caddy:
@@ -113,7 +151,9 @@ volumes:
   directus_uploads:
   caddy_data:
   caddy_config:
+  umami_pgdata:
 
 networks:
   internal:
   web:
+  umami:

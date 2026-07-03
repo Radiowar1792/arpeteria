@@ -317,6 +317,55 @@ docker compose up -d
 docker system df
 ```
 
+## Étape 16 — Statistiques du site (Umami, optionnel)
+
+Umami est un outil d'analytics respectueux de la vie privée (pas de cookies, pas de partage de
+données), auto-hébergé avec sa propre base Postgres.
+
+**1. Génère les secrets et configure `.env` :**
+
+```bash
+openssl rand -base64 24   # → UMAMI_DB_PASSWORD
+openssl rand -hex 32      # → UMAMI_APP_SECRET
+nano .env
+```
+
+Si Umami est servi sur un domaine différent d'`arpeteria.fr` (ex. un sous-domaine dédié derrière
+un reverse proxy externe), renseigne aussi `UMAMI_PUBLIC_URL` (voir `.env.example`).
+
+**2. Démarre Umami :**
+
+```bash
+docker compose up -d umami umami-database
+sudo ufw allow 3000/tcp
+```
+
+> ⚠️ Le port 3000 est ouvert sur toutes les interfaces (comme `web`/`directus`) pour permettre à
+> un reverse proxy externe de router un sous-domaine dessus. Si tu préfères le restreindre (ex. à
+> un VPN comme Tailscale), adapte la règle `ufw` en conséquence plutôt que d'ouvrir en grand.
+
+**3. Connecte-toi** sur l'URL configurée (ex. `https://stats.arpeteria.fr`) avec les identifiants
+par défaut :
+
+- Utilisateur : `admin`
+- Mot de passe : `umami`
+
+**Change immédiatement ce mot de passe** (Paramètres → Profil) — les identifiants par défaut sont
+publics et documentés par Umami lui-même.
+
+**4. Crée le site** : Paramètres → Sites → Ajouter un site → Nom `Arpeteria`, Domaine
+`arpeteria.fr` (ou le domaine réellement utilisé). Copie l'**ID du site** généré.
+
+**5. Active le suivi sur le site** : ajoute cet ID dans `.env` (`UMAMI_WEBSITE_ID=...`), puis
+rebuild :
+
+```bash
+CACHEBUST=$(date +%s) docker compose up -d --build web
+```
+
+Le script de suivi Umami n'est injecté dans le HTML que si `UMAMI_WEBSITE_ID` est renseigné —
+sans ça, `web` se construit normalement mais sans aucun tracking.
+
 ---
 
 ## Dépannage rapide
