@@ -43,7 +43,7 @@ export interface Recommandation {
 }
 
 // URL interne utilisée pour interroger l'API au moment du build (réseau Docker en prod).
-const DIRECTUS_URL = import.meta.env.DIRECTUS_URL ?? 'http://localhost:8055';
+const DIRECTUS_URL = import.meta.env.DIRECTUS_URL ?? 'http://127.0.0.1:8055';
 // URL publique utilisée dans le HTML généré (images, liens) — doit être joignable par les visiteurs.
 export const DIRECTUS_PUBLIC_URL = import.meta.env.DIRECTUS_PUBLIC_URL ?? DIRECTUS_URL;
 const DIRECTUS_STATIC_TOKEN = import.meta.env.DIRECTUS_STATIC_TOKEN;

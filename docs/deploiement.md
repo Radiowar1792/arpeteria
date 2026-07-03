@@ -145,7 +145,7 @@ Renseigne dans `.env` :
 - `DIRECTUS_ADMIN_EMAIL` (l'adresse du conservateur)
 - `DIRECTUS_ADMIN_PASSWORD`
 - `DIRECTUS_STATIC_TOKEN` — **laisse vide pour l'instant**, il sera généré à l'étape 11
-- `DIRECTUS_ADMIN_URL=http://localhost:8055` (déjà la valeur par défaut — correcte sur le VPS grâce au port publié en local uniquement, voir Étape 9)
+- `DIRECTUS_ADMIN_URL=http://127.0.0.1:8055` (déjà la valeur par défaut — correcte sur le VPS grâce au port publié en local uniquement, voir Étape 9). Utilise bien `127.0.0.1`, pas `localhost` : sur Debian, Node résout souvent `localhost` en `::1` (IPv6) en priorité, alors que Docker ne publie le port qu'en IPv4 — la connexion échouerait en `ECONNREFUSED`.
 
 ## Étape 9 — Démarrer la base et Directus (sans le site pour l'instant)
 
@@ -156,7 +156,9 @@ docker compose up -d database directus caddy
 docker compose logs -f directus   # Ctrl+C une fois "Server started" affiché
 ```
 
-Directus est maintenant joignable en local sur le VPS via `http://localhost:8055` (lié à `127.0.0.1`, jamais exposé publiquement — voir `docker-compose.yml`). Caddy tente déjà d'obtenir les certificats HTTPS pour `arpeteria.fr`/`admin.arpeteria.fr` (normal que `arpeteria.fr` renvoie une erreur temporaire tant que `web` n'est pas démarré).
+Directus est maintenant joignable en local sur le VPS via `http://127.0.0.1:8055` (lié à `127.0.0.1`, jamais exposé publiquement — voir `docker-compose.yml`). Caddy tente déjà d'obtenir les certificats HTTPS pour `arpeteria.fr`/`admin.arpeteria.fr` (normal que `arpeteria.fr` renvoie une erreur temporaire tant que `web` n'est pas démarré).
+
+> ⚠️ Ne lance jamais `docker compose up -d --build` (sans préciser de service) à ce stade : ça tenterait aussi de builder `web`, qui a besoin de `DIRECTUS_STATIC_TOKEN` (pas encore généré, voir Étape 11) et de Directus déjà démarré. Utilise toujours la forme ciblée `docker compose up -d database directus caddy` jusqu'à l'Étape 12.
 
 ## Étape 10 — Poser le schéma Directus et semer les catégories
 
@@ -255,5 +257,6 @@ docker system df
 | Caddy ne délivre pas de certificat HTTPS | Vérifier que le DNS pointe bien vers le VPS (`dig +short arpeteria.fr`) et que les ports 80/443 sont ouverts (`sudo ufw status`) |
 | `docker compose up` échoue sur `web` (build) | Vérifier `DIRECTUS_STATIC_TOKEN` non vide dans `.env`, et que Directus tourne (`docker compose ps`) |
 | Le site est en ligne mais vide | Normal tant qu'aucune œuvre n'est publiée + reconstruite (voir Étape 13) |
-| `npm run bootstrap` échoue en `ECONNREFUSED` | Directus n'est pas encore démarré/prêt — relancer `docker compose logs directus` et réessayer une fois "Server started" affiché |
+| `npm run bootstrap` échoue en `ECONNREFUSED` | Soit Directus n'est pas encore démarré/prêt (relancer `docker compose logs directus`, réessayer une fois "Server started" affiché), soit `DIRECTUS_ADMIN_URL` utilise `localhost` au lieu de `127.0.0.1` dans `.env` (Node résout `localhost` en `::1` sur Debian, non publié par Docker) |
+| `docker compose up --build` échoue avec `network mode "web" not supported by buildkit` | Le build de `web` doit utiliser `network: host` (déjà configuré dans `docker-compose.yml`), pas un réseau bridge personnalisé — BuildKit ne le supporte pas. Si l'erreur persiste après un `git pull`, vérifie que `docker-compose.yml` contient bien `network: host` pour le service `web` |
 | Erreur de connexion admin Directus | Vérifier `DIRECTUS_ADMIN_EMAIL`/`DIRECTUS_ADMIN_PASSWORD` dans `.env`, redémarrer avec `docker compose up -d directus` |

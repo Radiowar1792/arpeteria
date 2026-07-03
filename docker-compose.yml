@@ -56,11 +56,16 @@ services:
     build:
       context: ./apps/web
       # `docker build` tourne dans un réseau isolé par défaut : sans cette ligne,
-      # `RUN npm run build` ne pourrait pas résoudre "directus" pendant le build.
+      # `RUN npm run build` ne pourrait pas joindre Directus pendant le build.
+      # BuildKit (builder par défaut depuis Docker récent) ne supporte pas les réseaux
+      # bridge personnalisés définis par compose (ex. "web") pour le build — seuls
+      # "host"/"none"/"default" sont supportés nativement. On utilise donc "host" et
+      # on joint Directus via son port publié sur l'hôte (127.0.0.1:8055) plutôt que
+      # via le nom de service "directus" (non résolvable en mode réseau host).
       # Le conteneur directus doit donc déjà tourner avant de builder web (voir docs/deploiement.md).
-      network: web
+      network: host
       args:
-        DIRECTUS_URL: http://directus:8055
+        DIRECTUS_URL: http://127.0.0.1:8055
         DIRECTUS_PUBLIC_URL: https://admin.arpeteria.fr
         DIRECTUS_STATIC_TOKEN: ${DIRECTUS_STATIC_TOKEN}
     restart: unless-stopped
