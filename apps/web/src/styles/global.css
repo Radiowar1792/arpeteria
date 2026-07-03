@@ -655,7 +655,7 @@ main {
 /* ── Grilles ── */
 .grille-categories,
 .grille-oeuvres,
-.liste-recommandations {
+.grille-recommandations {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -665,6 +665,14 @@ main {
 
 .grille-categories {
   grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+}
+
+.grille-recommandations {
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+}
+
+.grille-recommandations li {
+  animation: entree-douce var(--transition-douce) both;
 }
 
 .grille-oeuvres {
@@ -1083,13 +1091,125 @@ main {
   border: 0;
 }
 
-/* ── Recommandations ── */
-.liste-recommandations li {
-  border-bottom: 1px solid var(--arpeteria-bordure);
-  padding-bottom: 1rem;
-  transition: padding-left var(--transition-rapide);
+/* ── Carte lien (LienExterne + recommandations) ── */
+.lien-carte {
+  display: block;
+  max-width: 30rem;
+  margin-top: 2rem;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid var(--arpeteria-bordure);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: var(--arpeteria-blanc);
+  box-shadow: var(--ombre-douce);
+  transition:
+    transform var(--transition-douce),
+    box-shadow var(--transition-douce),
+    border-color var(--transition-douce);
 }
 
-.liste-recommandations li:hover {
-  padding-left: 0.4rem;
+.lien-carte:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--ombre-forte);
+  border-color: var(--arpeteria-rouge-clair);
+}
+
+.lien-carte__barre {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 0.9rem;
+  background: var(--arpeteria-noir);
+  font-family: var(--police-interface);
+}
+
+.lien-carte__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--arpeteria-blanc);
+  background: var(--arpeteria-rouge);
+  padding: 0.25rem 0.55rem;
+  border-radius: 0.3rem;
+  white-space: nowrap;
+}
+
+.lien-carte__badge svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.lien-carte__hote {
+  font-size: 0.8rem;
+  color: var(--arpeteria-gris-clair);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lien-carte__corps {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.1rem 1.2rem;
+}
+
+.lien-carte__titre {
+  font-family: var(--police-editorial);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.4rem;
+  transition: color var(--transition-rapide);
+}
+
+.lien-carte:hover .lien-carte__titre {
+  color: var(--arpeteria-rouge);
+}
+
+.lien-carte__description {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-family: var(--police-interface);
+  font-size: 0.9rem;
+  color: var(--arpeteria-gris);
+  margin: 0 0 1rem;
+}
+
+.lien-carte__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: auto;
+  font-family: var(--police-interface);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--arpeteria-rouge);
+}
+
+.lien-carte__fleche {
+  width: 1rem;
+  height: 1rem;
+  transition: transform var(--transition-rapide);
+}
+
+.lien-carte:hover .lien-carte__fleche {
+  transform: translateX(0.3rem);
+}
+
+.lien-carte--recommandation {
+  max-width: none;
+  height: 100%;
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.lien-carte--recommandation .lien-carte__corps {
+  flex: 1;
 }

@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { getRecommandations } from '../lib/directus.ts';
+import { extraireHote } from '../lib/url.ts';
 
 const recommandations = await getRecommandations();
 ---
@@ -11,11 +12,33 @@ const recommandations = await getRecommandations();
   <main id="contenu-principal">
     <h1>Recommandations</h1>
     {recommandations.length > 0 ? (
-      <ul class="liste-recommandations">
+      <ul class="grille-recommandations">
         {recommandations.map((rec) => (
           <li>
-            <a href={rec.url} target="_blank" rel="noopener noreferrer">{rec.nom_site}</a>
-            {rec.description && <p>{rec.description}</p>}
+            <a class="lien-carte lien-carte--recommandation" href={rec.url} target="_blank" rel="noopener noreferrer">
+              <div class="lien-carte__barre">
+                <span class="lien-carte__badge">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M10.6 13.4a1 1 0 0 1 0-1.4l3-3a1 1 0 1 1 1.4 1.4l-3 3a1 1 0 0 1-1.4 0Zm-3.2 3.2 1.4-1.4a3 3 0 0 0 4.2 0l3-3a3 3 0 0 0-4.2-4.2l-1 1a1 1 0 0 0 1.4 1.4l1-1a1 1 0 1 1 1.4 1.4l-3 3a1 1 0 0 1-1.4 0 1 1 0 0 0-1.4 0l-1.4 1.4a3 3 0 0 0 0 4.2 3 3 0 0 0 4.2 0l1-1a1 1 0 0 0-1.4-1.4l-1 1a1 1 0 0 1-1.4 0 1 1 0 0 1 0-1.4Z"
+                    />
+                  </svg>
+                  Site
+                </span>
+                <span class="lien-carte__hote">{extraireHote(rec.url)}</span>
+              </div>
+              <div class="lien-carte__corps">
+                <h2 class="lien-carte__titre">{rec.nom_site}</h2>
+                {rec.description && <p class="lien-carte__description">{rec.description}</p>}
+                <span class="lien-carte__action">
+                  Visiter le site
+                  <svg class="lien-carte__fleche" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill="currentColor" d="M13 5l7 7-7 7-1.4-1.4L16.2 13H4v-2h12.2l-4.6-4.6L13 5Z" />
+                  </svg>
+                </span>
+              </div>
+            </a>
           </li>
         ))}
       </ul>

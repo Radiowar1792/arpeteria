@@ -1,15 +1,47 @@
 ---
+import { extraireHote } from '../lib/url.ts';
+
 interface Props {
   type: 'video' | 'audio' | 'lien';
   url: string;
 }
 const { type, url } = Astro.props;
-const labels: Record<Props['type'], string> = {
-  video: 'Voir la vidéo',
-  audio: "Écouter l'audio",
-  lien: 'Visiter le site',
-};
+
+const config = {
+  video: {
+    badge: 'Vidéo',
+    action: 'Voir la vidéo',
+    icone: 'M8 5v14l11-7L8 5Z',
+  },
+  audio: {
+    badge: 'Audio',
+    action: "Écouter l'audio",
+    icone: 'M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6Z',
+  },
+  lien: {
+    badge: 'Site',
+    action: 'Visiter le site',
+    icone:
+      'M10.6 13.4a1 1 0 0 1 0-1.4l3-3a1 1 0 1 1 1.4 1.4l-3 3a1 1 0 0 1-1.4 0Zm-3.2 3.2 1.4-1.4a3 3 0 0 0 4.2 0l3-3a3 3 0 0 0-4.2-4.2l-1 1a1 1 0 0 0 1.4 1.4l1-1a1 1 0 1 1 1.4 1.4l-3 3a1 1 0 0 1-1.4 0 1 1 0 0 0-1.4 0l-1.4 1.4a3 3 0 0 0 0 4.2 3 3 0 0 0 4.2 0l1-1a1 1 0 0 0-1.4-1.4l-1 1a1 1 0 0 1-1.4 0 1 1 0 0 1 0-1.4Z',
+  },
+}[type];
+
+const hote = extraireHote(url);
 ---
-<a class="bouton bouton--principal lien-externe" href={url} target="_blank" rel="noopener noreferrer">
-  {labels[type]}
+<a class="lien-carte" href={url} target="_blank" rel="noopener noreferrer">
+  <div class="lien-carte__barre">
+    <span class="lien-carte__badge">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d={config.icone} /></svg>
+      {config.badge}
+    </span>
+    {hote && <span class="lien-carte__hote">{hote}</span>}
+  </div>
+  <div class="lien-carte__corps">
+    <span class="lien-carte__action">
+      {config.action}
+      <svg class="lien-carte__fleche" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M13 5l7 7-7 7-1.4-1.4L16.2 13H4v-2h12.2l-4.6-4.6L13 5Z" />
+      </svg>
+    </span>
+  </div>
 </a>
