@@ -2,7 +2,8 @@
 import Base from '../../../layouts/Base.astro';
 import CarteOeuvre from '../../../components/CarteOeuvre.astro';
 import BreadcrumbSchema from '../../../components/BreadcrumbSchema.astro';
-import { getCategories, getOeuvres, type Categorie } from '../../../lib/directus.ts';
+import FiltreLangues from '../../../components/FiltreLangues.astro';
+import { getCategories, getOeuvres, type Categorie, type Langue } from '../../../lib/directus.ts';
 import { canonicalUrl } from '../../../lib/seo.ts';
 
 export async function getStaticPaths() {
@@ -18,6 +19,7 @@ interface Props {
 }
 const { categorie } = Astro.props;
 const oeuvres = await getOeuvres({ categorieSlug: categorie.slug });
+const langues = Array.from(new Set(oeuvres.map((o) => o.langue).filter((l): l is Langue => Boolean(l))));
 const filAriane = [
   { name: 'Accueil', url: canonicalUrl('/') },
   { name: 'Contemporain', url: canonicalUrl('/contemporain') },
@@ -34,13 +36,16 @@ const filAriane = [
     {categorie.description && <p>{categorie.description}</p>}
 
     {oeuvres.length > 0 ? (
-      <ul class="grille-oeuvres">
-        {oeuvres.map((oeuvre) => (
-          <li>
-            <CarteOeuvre oeuvre={oeuvre} />
-          </li>
-        ))}
-      </ul>
+      <>
+        <FiltreLangues langues={langues} />
+        <ul class="grille-oeuvres">
+          {oeuvres.map((oeuvre) => (
+            <li data-langue={oeuvre.langue ?? 'fr'}>
+              <CarteOeuvre oeuvre={oeuvre} />
+            </li>
+          ))}
+        </ul>
+      </>
     ) : (
       <p>Aucune œuvre publiée dans cette catégorie pour le moment.</p>
     )}

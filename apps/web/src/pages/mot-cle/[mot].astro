@@ -1,0 +1,64 @@
+---
+import Base from '../../layouts/Base.astro';
+import CarteOeuvre from '../../components/CarteOeuvre.astro';
+import BreadcrumbSchema from '../../components/BreadcrumbSchema.astro';
+import { getOeuvres } from '../../lib/directus.ts';
+import { slugifierMotCle } from '../../lib/motscles.ts';
+import { canonicalUrl } from '../../lib/seo.ts';
+
+export async function getStaticPaths() {
+  const oeuvres = await getOeuvres();
+  const parSlug = new Map<string, string>();
+
+  for (const oeuvre of oeuvres) {
+    for (const mot of oeuvre.mots_cles ?? []) {
+      const slug = slugifierMotCle(mot);
+      if (slug && !parSlug.has(slug)) parSlug.set(slug, mot);
+    }
+  }
+
+  return Array.from(parSlug.entries()).map(([slug, label]) => ({
+    params: { mot: slug },
+    props: { label },
+  }));
+}
+
+interface Props {
+  label: string;
+}
+const { label } = Astro.props;
+const { mot } = Astro.params;
+
+const toutes = await getOeuvres();
+const oeuvres = toutes.filter((o) => (o.mots_cles ?? []).some((m) => slugifierMotCle(m) === mot));
+
+const filAriane = [
+  { name: 'Accueil', url: canonicalUrl('/') },
+  { name: `Mot-clé : ${label}`, url: canonicalUrl(`/mot-cle/${mot}`) },
+];
+---
+<Base
+  title={`Mot-clé : ${label}`}
+  description={`Œuvres liées au mot-clé "${label}" sur Arpeteria.`}
+>
+  <BreadcrumbSchema items={filAriane} />
+  <main id="contenu-principal">
+    <nav class="fil-ariane" aria-label="Fil d'Ariane">
+      <a href="/">Accueil</a> › Mot-clé
+    </nav>
+    <p class="kicker">Mot-clé</p>
+    <h1>{label}</h1>
+
+    {oeuvres.length > 0 ? (
+      <ul class="grille-oeuvres">
+        {oeuvres.map((oeuvre) => (
+          <li>
+            <CarteOeuvre oeuvre={oeuvre} />
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>Aucune œuvre pour ce mot-clé.</p>
+    )}
+  </main>
+</Base>

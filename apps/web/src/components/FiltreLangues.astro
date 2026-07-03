@@ -1,0 +1,51 @@
+---
+import type { Langue } from '../lib/directus.ts';
+import { LABELS_LANGUE } from '../lib/langues.ts';
+
+interface Props {
+  langues: Langue[];
+}
+const { langues } = Astro.props;
+---
+{langues.length > 1 && (
+  <div class="filtre-langues" role="group" aria-label="Filtrer par langue">
+    <button type="button" class="filtre-langues__pilule est-actif" data-langue-filtre="tout">
+      Toutes langues
+    </button>
+    {langues.map((langue) => (
+      <button type="button" class="filtre-langues__pilule" data-langue-filtre={langue}>
+        {LABELS_LANGUE[langue]}
+      </button>
+    ))}
+  </div>
+)}
+
+<script>
+  function initFiltresLangue() {
+    document.querySelectorAll<HTMLElement>('.filtre-langues').forEach((filtre) => {
+      if (filtre.dataset.pret) return;
+      const grille = filtre.nextElementSibling;
+      if (!grille) return;
+      filtre.dataset.pret = 'true';
+
+      const items = Array.from(grille.querySelectorAll<HTMLElement>('[data-langue]'));
+      const boutons = Array.from(filtre.querySelectorAll<HTMLButtonElement>('.filtre-langues__pilule'));
+
+      filtre.addEventListener('click', (evenement) => {
+        const bouton = (evenement.target as HTMLElement).closest<HTMLButtonElement>(
+          '.filtre-langues__pilule'
+        );
+        if (!bouton) return;
+        const choix = bouton.dataset.langueFiltre;
+
+        boutons.forEach((b) => b.classList.toggle('est-actif', b === bouton));
+        items.forEach((item) => {
+          const correspond = choix === 'tout' || item.dataset.langue === choix;
+          item.style.display = correspond ? '' : 'none';
+        });
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initFiltresLangue);
+</script>

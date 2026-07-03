@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Page introuvable" description="Cette page n'existe pas ou plus sur Arpeteria.">
+  <main id="contenu-principal" class="page-404">
+    <img class="page-404__logo" src="/logo/logo-256.png" alt="" width="72" height="72" />
+    <p class="kicker kicker--centre">Erreur 404</p>
+    <h1>Cette page s'est perdue dans les archives</h1>
+    <p>
+      Le lien suivi est peut-être obsolète, ou l'œuvre n'est plus publiée. Essaie l'une de ces
+      pistes :
+    </p>
+    <div class="page-404__actions">
+      <a class="bouton bouton--principal" href="/">Retour à l'accueil</a>
+      <a class="bouton bouton--secondaire" href="/archives">Explorer les archives</a>
+      <a class="bouton bouton--secondaire" href="/recherche">Lancer une recherche</a>
+    </div>
+  </main>
+</Base>

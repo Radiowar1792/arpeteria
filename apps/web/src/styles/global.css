@@ -828,6 +828,41 @@ main {
   grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
 }
 
+/* ── Filtre par langue ── */
+.filtre-langues {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.75rem;
+}
+
+.filtre-langues__pilule {
+  font-family: var(--police-interface);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  border-radius: 3rem;
+  border: 1px solid var(--arpeteria-bordure);
+  background: var(--arpeteria-blanc);
+  color: var(--arpeteria-gris);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-rapide),
+    color var(--transition-rapide),
+    border-color var(--transition-rapide);
+}
+
+.filtre-langues__pilule:hover {
+  border-color: var(--arpeteria-rouge-clair);
+  color: var(--arpeteria-rouge);
+}
+
+.filtre-langues__pilule.est-actif {
+  background: var(--arpeteria-rouge);
+  border-color: var(--arpeteria-rouge);
+  color: var(--arpeteria-blanc);
+}
+
 .grille-categories li,
 .grille-oeuvres li {
   animation: entree-douce var(--transition-douce) both;
@@ -1361,4 +1396,66 @@ main {
 
 .lien-carte--recommandation .lien-carte__corps {
   flex: 1;
+}
+
+/* ── Page 404 ── */
+.page-404 {
+  text-align: center;
+  padding-top: 4rem;
+  padding-bottom: 5rem;
+}
+
+.page-404__logo {
+  margin-bottom: 1rem;
+  opacity: 0.85;
+}
+
+.page-404 p {
+  max-width: 34rem;
+  margin: 0 auto 1.75rem;
+  color: var(--arpeteria-gris);
+}
+
+.page-404__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* ── Mots-clés (fiche œuvre) ── */
+.mots-cles {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 2rem 0 0;
+  padding: 0;
+}
+
+.mots-cles a {
+  display: inline-block;
+  font-family: var(--police-interface);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--arpeteria-gris);
+  background: var(--arpeteria-gris-clair);
+  padding: 0.35rem 0.85rem;
+  border-radius: 3rem;
+  text-decoration: none;
+  transition:
+    background-color var(--transition-rapide),
+    color var(--transition-rapide);
+}
+
+.mots-cles a:hover {
+  background: var(--arpeteria-rouge);
+  color: var(--arpeteria-blanc);
+}
+
+/* ── Œuvres liées ── */
+.section-liee {
+  margin-top: 3.5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--arpeteria-bordure);
 }

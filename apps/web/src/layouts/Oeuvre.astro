@@ -5,8 +5,10 @@ import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
 import LecteurPDF from '../components/LecteurPDF.astro';
 import LecteurVideo from '../components/LecteurVideo.astro';
 import LienExterne from '../components/LienExterne.astro';
-import { assetUrl, type Oeuvre } from '../lib/directus.ts';
+import CarteOeuvre from '../components/CarteOeuvre.astro';
+import { assetUrl, getOeuvres, type Oeuvre } from '../lib/directus.ts';
 import { canonicalUrl } from '../lib/seo.ts';
+import { slugifierMotCle } from '../lib/motscles.ts';
 
 interface Props {
   oeuvre: Oeuvre;
@@ -15,6 +17,14 @@ const { oeuvre } = Astro.props;
 const url = canonicalUrl(`/oeuvre/${oeuvre.slug}`);
 const image = oeuvre.couverture ? assetUrl(oeuvre.couverture.id) : undefined;
 const sectionLabel = oeuvre.section === 'archives' ? 'Archives' : 'Contemporain';
+
+const oeuvresLiees = (
+  await getOeuvres(
+    oeuvre.categorie ? { categorieSlug: oeuvre.categorie.slug } : { section: oeuvre.section }
+  )
+)
+  .filter((o) => o.id !== oeuvre.id)
+  .slice(0, 4);
 const filAriane = [
   { name: 'Accueil', url: canonicalUrl('/') },
   { name: sectionLabel, url: canonicalUrl(`/${oeuvre.section}`) },
@@ -67,6 +77,29 @@ const filAriane = [
     )}
     {oeuvre.type_media !== 'pdf' && oeuvre.type_media !== 'video' && oeuvre.url_externe && (
       <LienExterne type={oeuvre.type_media} url={oeuvre.url_externe} />
+    )}
+
+    {oeuvre.mots_cles && oeuvre.mots_cles.length > 0 && (
+      <ul class="mots-cles">
+        {oeuvre.mots_cles.map((mot) => (
+          <li>
+            <a href={`/mot-cle/${slugifierMotCle(mot)}`}>{mot}</a>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {oeuvresLiees.length > 0 && (
+      <section class="section-liee">
+        <h2>À découvrir aussi</h2>
+        <ul class="grille-oeuvres">
+          {oeuvresLiees.map((liee) => (
+            <li>
+              <CarteOeuvre oeuvre={liee} />
+            </li>
+          ))}
+        </ul>
+      </section>
     )}
   </main>
 </Base>
