@@ -2,6 +2,7 @@
 import Base from './Base.astro';
 import SchemaOrg from '../components/SchemaOrg.astro';
 import LecteurPDF from '../components/LecteurPDF.astro';
+import LecteurVideo from '../components/LecteurVideo.astro';
 import LienExterne from '../components/LienExterne.astro';
 import { assetUrl, type Oeuvre } from '../lib/directus.ts';
 import { canonicalUrl } from '../lib/seo.ts';
@@ -44,9 +45,12 @@ const sectionLabel = oeuvre.section === 'archives' ? 'Archives' : 'Contemporain'
     )}
 
     {oeuvre.type_media === 'pdf' && oeuvre.fichier_pdf && (
-      <LecteurPDF fichierId={oeuvre.fichier_pdf.id} couvertureUrl={image} />
+      <LecteurPDF fichierId={oeuvre.fichier_pdf.id} />
     )}
-    {oeuvre.type_media !== 'pdf' && oeuvre.url_externe && (
+    {oeuvre.type_media === 'video' && oeuvre.url_externe && (
+      <LecteurVideo url={oeuvre.url_externe} titre={oeuvre.titre} />
+    )}
+    {oeuvre.type_media !== 'pdf' && oeuvre.type_media !== 'video' && oeuvre.url_externe && (
       <LienExterne type={oeuvre.type_media} url={oeuvre.url_externe} />
     )}
   </main>

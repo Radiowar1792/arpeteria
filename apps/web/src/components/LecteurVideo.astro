@@ -1,0 +1,80 @@
+---
+import { extraireIdYoutube } from '../lib/youtube.ts';
+import LienExterne from './LienExterne.astro';
+
+interface Props {
+  url: string;
+  titre: string;
+}
+const { url, titre } = Astro.props;
+const videoId = extraireIdYoutube(url);
+const poster = videoId ? `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg` : undefined;
+const posterSecours = videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : undefined;
+---
+{videoId ? (
+  <div class="lecteur-video" data-video-id={videoId} data-titre={titre}>
+    <div class="lecteur-video__barre">
+      <span class="lecteur-video__badge">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path
+          fill="currentColor"
+          d="M21.6 7.2a2.7 2.7 0 0 0-1.9-1.9C18 5 12 5 12 5s-6 0-7.7.3a2.7 2.7 0 0 0-1.9 1.9A28 28 0 0 0 2 12a28 28 0 0 0 .4 4.8 2.7 2.7 0 0 0 1.9 1.9C6 19 12 19 12 19s6 0 7.7-.3a2.7 2.7 0 0 0 1.9-1.9A28 28 0 0 0 22 12a28 28 0 0 0-.4-4.8ZM10 15.3V8.7l5.7 3.3-5.7 3.3Z"
+        /></svg>
+        Vidéo
+      </span>
+      <a class="lecteur-video__action" href={url} target="_blank" rel="noopener noreferrer">
+        Voir sur YouTube
+      </a>
+    </div>
+    <div class="lecteur-video__stage">
+      <button type="button" class="lecteur-video__declencheur" aria-label={`Lancer la vidéo : ${titre}`}>
+        <img
+          class="lecteur-video__poster"
+          src={poster}
+          data-secours={posterSecours}
+          alt=""
+          loading="lazy"
+        />
+        <span class="lecteur-video__jouer" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7L8 5Z" /></svg>
+        </span>
+      </button>
+    </div>
+  </div>
+) : (
+  <LienExterne type="video" url={url} />
+)}
+
+<script>
+  function initLecteursVideo() {
+    document.querySelectorAll<HTMLElement>('.lecteur-video').forEach((lecteur) => {
+      if (lecteur.dataset.pret) return;
+      const declencheur = lecteur.querySelector<HTMLButtonElement>('.lecteur-video__declencheur');
+      const stage = lecteur.querySelector<HTMLElement>('.lecteur-video__stage');
+      const poster = lecteur.querySelector<HTMLImageElement>('.lecteur-video__poster');
+      const videoId = lecteur.dataset.videoId;
+      const titre = lecteur.dataset.titre ?? 'Vidéo';
+      if (!declencheur || !stage || !videoId) return;
+      lecteur.dataset.pret = 'true';
+
+      poster?.addEventListener('error', () => {
+        if (poster.dataset.secours) {
+          poster.src = poster.dataset.secours;
+          poster.removeAttribute('data-secours');
+        }
+      });
+
+      declencheur.addEventListener('click', () => {
+        const cadre = document.createElement('iframe');
+        cadre.className = 'lecteur-video__cadre';
+        cadre.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`;
+        cadre.title = titre;
+        cadre.allow =
+          'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        cadre.allowFullscreen = true;
+        stage.replaceChildren(cadre);
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initLecteursVideo);
+</script>
