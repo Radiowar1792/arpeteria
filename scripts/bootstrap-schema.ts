@@ -49,7 +49,13 @@ const collections: CollectionDef[] = [
       {
         field: 'slug',
         type: 'string',
-        meta: { interface: 'input', required: true },
+        meta: {
+          interface: 'input',
+          required: true,
+          options: { slug: true, trim: true },
+          validation: { slug: { _regex: '^[a-z0-9]+(-[a-z0-9]+)*$' } },
+          validation_message: 'Lettres minuscules, chiffres et tirets uniquement (ex. periode-medievale).',
+        },
         schema: { is_unique: true },
       },
       {
@@ -98,7 +104,13 @@ const collections: CollectionDef[] = [
       {
         field: 'slug',
         type: 'string',
-        meta: { interface: 'input', required: true },
+        meta: {
+          interface: 'input',
+          required: true,
+          options: { slug: true, trim: true },
+          validation: { slug: { _regex: '^[a-z0-9]+(-[a-z0-9]+)*$' } },
+          validation_message: 'Lettres minuscules, chiffres et tirets uniquement (ex. savoyard-ou-savoisien).',
+        },
         schema: { is_unique: true },
       },
       { field: 'auteur', type: 'string', meta: { interface: 'input' } },
