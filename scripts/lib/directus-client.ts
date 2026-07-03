@@ -35,10 +35,21 @@ async function getAccessToken(): Promise<string> {
   return cachedToken;
 }
 
-/** Appelle l'API REST Directus authentifiée. Retourne `null` sur 404 (utile pour les checks d'existence). */
+/**
+ * Appelle l'API REST Directus authentifiée. Retourne `null` sur 404.
+ *
+ * `notFoundStatuses` permet d'ajouter 403 à la liste des statuts traités comme
+ * "n'existe pas" : sur les lookups par nom (`/collections/:c`, `/fields/:c/:f`,
+ * `/relations/:c/:f`), Directus répond 403 — pas 404 — quand la ressource
+ * n'existe pas, même pour un compte admin complet (comportement volontaire,
+ * pour ne pas laisser deviner l'existence d'une ressource via le code HTTP).
+ * Sans ça, les checks d'existence (`collectionExists` etc.) plantent au tout
+ * premier bootstrap au lieu de conclure "n'existe pas encore, à créer".
+ */
 export async function directusRequest<T = unknown>(
   path: string,
-  init: RequestInit = {}
+  init: RequestInit = {},
+  { notFoundStatuses = [404] }: { notFoundStatuses?: number[] } = {}
 ): Promise<T | null> {
   const token = await getAccessToken();
 
@@ -51,7 +62,7 @@ export async function directusRequest<T = unknown>(
     },
   });
 
-  if (res.status === 404) return null;
+  if (notFoundStatuses.includes(res.status)) return null;
 
   if (!res.ok) {
     throw new Error(`Directus API ${init.method ?? 'GET'} ${path} → ${res.status} : ${await res.text()}`);
@@ -64,13 +75,20 @@ export async function directusRequest<T = unknown>(
 }
 
 export async function collectionExists(collection: string): Promise<boolean> {
-  return (await directusRequest(`/collections/${collection}`)) !== null;
+  return (
+    (await directusRequest(`/collections/${collection}`, {}, { notFoundStatuses: [404, 403] })) !== null
+  );
 }
 
 export async function fieldExists(collection: string, field: string): Promise<boolean> {
-  return (await directusRequest(`/fields/${collection}/${field}`)) !== null;
+  return (
+    (await directusRequest(`/fields/${collection}/${field}`, {}, { notFoundStatuses: [404, 403] })) !== null
+  );
 }
 
 export async function relationExists(collection: string, field: string): Promise<boolean> {
-  return (await directusRequest(`/relations/${collection}/${field}`)) !== null;
+  return (
+    (await directusRequest(`/relations/${collection}/${field}`, {}, { notFoundStatuses: [404, 403] })) !==
+    null
+  );
 }
