@@ -71,6 +71,11 @@ services:
     restart: unless-stopped
     depends_on: [directus]
     networks: [web]
+    ports:
+      # Accès direct par IP:8080 tant qu'il n'y a pas de nom de domaine/DNS pointant sur le VPS
+      # (le "caddy" de façade, lui, n'accepte que Host: arpeteria.fr). À retirer avant la prod :
+      # une fois le DNS en place, seul "caddy" (ports 80/443) doit être exposé publiquement.
+      - "8080:80"
 
   # ───────────────────────── Reverse proxy ─────────────────────────
   caddy:
