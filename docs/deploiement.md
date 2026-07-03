@@ -119,8 +119,8 @@ Caddy (Étape 9) a besoin que ces deux domaines résolvent vers le VPS pour obte
 ## Étape 7 — Cloner le repo
 
 ```bash
-git clone https://github.com/Radiowar1792/arpetaria.git
-cd arpetaria
+git clone https://github.com/Radiowar1792/arpeteria.git
+cd arpeteria
 ```
 
 ## Étape 8 — Configurer `.env`
@@ -209,7 +209,7 @@ Tant que l'automatisation (Flow Directus → CI/CD, prévue en Phase 3) n'est pa
 1. Le conservateur crée/publie une œuvre dans `https://admin.arpeteria.fr`.
 2. Sur le VPS :
    ```bash
-   cd ~/arpetaria
+   cd ~/arpeteria
    docker compose up -d --build web
    ```
 
@@ -225,7 +225,7 @@ crontab -e
 Ajoute :
 
 ```cron
-0 3 * * * cd ~/arpetaria && docker compose exec -T database pg_dump -U $(grep DB_USER .env | cut -d= -f2) $(grep DB_DATABASE .env | cut -d= -f2) | gzip > ~/backups/db-$(date +\%F).sql.gz && docker run --rm -v arpeteria_directus_uploads:/data -v ~/backups:/backup alpine tar czf /backup/uploads-$(date +\%F).tar.gz -C /data . && find ~/backups -mtime +30 -delete
+0 3 * * * cd ~/arpeteria && docker compose exec -T database pg_dump -U $(grep DB_USER .env | cut -d= -f2) $(grep DB_DATABASE .env | cut -d= -f2) | gzip > ~/backups/db-$(date +\%F).sql.gz && docker run --rm -v arpeteria_directus_uploads:/data -v ~/backups:/backup alpine tar czf /backup/uploads-$(date +\%F).tar.gz -C /data . && find ~/backups -mtime +30 -delete
 ```
 
 > ⚠️ C'est une sauvegarde **locale** (même machine). Pour respecter la règle 3-2-1 (voir [ARCHITECTURE.md §9](../ARCHITECTURE.md#9-sauvegardes--pérennité)), configure en plus une synchronisation vers un stockage externe (ex. `rclone` vers Scaleway Object Storage) — pas encore scripté dans ce repo, à mettre en place selon le stockage choisi.
