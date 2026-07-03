@@ -7,8 +7,8 @@ interface Props {
 const { oeuvre } = Astro.props;
 ---
 <a class="carte-oeuvre" href={`/oeuvre/${oeuvre.slug}`}>
-  {oeuvre.couverture && (
-    <div class="carte-oeuvre__media">
+  <div class="carte-oeuvre__media">
+    {oeuvre.couverture ? (
       <img
         class="carte-oeuvre__image"
         src={assetUrl(oeuvre.couverture.id)}
@@ -18,11 +18,17 @@ const { oeuvre } = Astro.props;
         height="400"
         transition:name={`couverture-${oeuvre.id}`}
       />
-    </div>
-  )}
+    ) : (
+      <div class="carte-oeuvre__media-secours" transition:name={`couverture-${oeuvre.id}`}>
+        <img src="/logo/logo-256.png" alt="" width="48" height="48" loading="lazy" />
+      </div>
+    )}
+  </div>
   <div class="carte-oeuvre__contenu">
     <h3 transition:name={`titre-${oeuvre.id}`}>{oeuvre.titre}</h3>
-    {oeuvre.auteur && <p class="carte-oeuvre__auteur">{oeuvre.auteur}</p>}
-    {oeuvre.date_oeuvre && <p class="carte-oeuvre__date">{oeuvre.date_oeuvre}</p>}
+    <div class="carte-oeuvre__meta">
+      {oeuvre.auteur && <p class="carte-oeuvre__auteur">{oeuvre.auteur}</p>}
+      {oeuvre.date_oeuvre && <p class="carte-oeuvre__date">{oeuvre.date_oeuvre}</p>}
+    </div>
   </div>
 </a>

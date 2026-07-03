@@ -658,7 +658,9 @@ main {
 
 /* ── Carte œuvre ── */
 .carte-oeuvre {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   text-decoration: none;
   color: inherit;
   border: 1px solid var(--arpeteria-bordure);
@@ -680,10 +682,13 @@ main {
 .carte-oeuvre__media {
   overflow: hidden;
   background: var(--arpeteria-gris-clair);
+  aspect-ratio: 3 / 4;
+  flex-shrink: 0;
 }
 
 .carte-oeuvre__image {
   width: 100%;
+  height: 100%;
   aspect-ratio: 3 / 4;
   object-fit: cover;
   display: block;
@@ -694,16 +699,44 @@ main {
   transform: scale(1.06);
 }
 
+.carte-oeuvre__media-secours {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(155deg, var(--arpeteria-gris-clair), var(--arpeteria-gris-perle));
+}
+
+.carte-oeuvre__media-secours img {
+  width: 3rem;
+  height: 3rem;
+  opacity: 0.55;
+  transition: transform var(--transition-douce);
+}
+
+.carte-oeuvre:hover .carte-oeuvre__media-secours img {
+  transform: scale(1.08);
+}
+
 .carte-oeuvre__contenu {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   padding: 0.9rem 1rem 1.1rem;
   font-family: var(--police-interface);
 }
 
 .carte-oeuvre__contenu h3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   font-family: var(--police-editorial);
   font-size: 1.05rem;
   font-weight: 600;
-  margin: 0 0 0.3rem;
+  line-height: 1.3;
+  margin: 0 0 0.4rem;
   transition: color var(--transition-rapide);
 }
 
@@ -711,11 +744,19 @@ main {
   color: var(--arpeteria-rouge);
 }
 
+.carte-oeuvre__meta {
+  margin-top: auto;
+  padding-top: 0.3rem;
+}
+
 .carte-oeuvre__auteur,
 .carte-oeuvre__date {
   margin: 0;
   font-size: 0.85rem;
   color: var(--arpeteria-gris);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ── Fiche œuvre ── */
