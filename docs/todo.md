@@ -44,6 +44,22 @@ point d'entrée sur le frontend capable d'afficher un brouillon sans jamais expo
 publiquement. À concevoir avec soin (risque de sécurité si mal fait), pas quelque chose à
 improviser rapidement.
 
+## Nouveaux templates de contenu (fait le 2026-07-04, à activer sur le LXC)
+
+Trois nouvelles collections Directus ont été ajoutées en plus d'Œuvre (qui reste le template de
+base, inchangé) : **Articles** (`/actualites`, actualités et contexte historique), **Personnages**
+(`/personnages`, figures savoyardes/arpitanes) et **Lieux** (`/lieux`, patrimoine bâti). Chacune a
+ses pages de liste/fiche, son balisage Schema.org, et s'intègre à la recherche par mot-clé, au flux
+RSS et à la découverte au hasard.
+
+**Étapes à faire sur le LXC après le `git pull` :**
+1. Depuis `scripts/`, relancer `npm run bootstrap` (idempotent — ne touche pas aux collections
+   existantes, crée seulement `articles`, `personnages`, `lieux`).
+2. Dans Directus (Paramètres → Rôles & permissions), donner au rôle **Lecteur site** un accès en
+   lecture sur ces trois nouvelles collections (même logique que l'Étape 11 de
+   `docs/deploiement.md`) — sans ça le site plantera en 403 en essayant de les récupérer au build.
+3. Relancer le build : `CACHEBUST=$(date +%s) docker compose up -d --build web`.
+
 ## Champ image pour les catégories (fait le 2026-07-04)
 
 ~~Actuellement, illustrer une catégorie (période/discipline) demande de me redonner une image et
