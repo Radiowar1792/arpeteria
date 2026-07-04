@@ -353,14 +353,25 @@ async function ensureCollection(def: CollectionDef) {
     console.log(`✓ collection "${def.collection}" créée`);
   }
 
-  for (const field of def.fields) {
+  // +2 pour laisser le rang 1 à la clé primaire (créée à part, ci-dessus).
+  for (const [index, field] of def.fields.entries()) {
+    const sort = index + 2;
+
     if (await fieldExists(def.collection, field.field)) {
-      console.log(`  ↷ champ "${def.collection}.${field.field}" existe déjà`);
+      // Répare les champs créés par une exécution précédente : sans `sort` explicite,
+      // Directus les laisse à `sort: null`, et l'écran "Créer un élément" les considère
+      // hors du formulaire principal (message "Empty Form"), alors qu'ils existent bien
+      // dans le schéma. Un simple PATCH du tri suffit à les faire réapparaître.
+      await directusRequest(`/fields/${def.collection}/${field.field}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ meta: { sort } }),
+      });
+      console.log(`  ↷ champ "${def.collection}.${field.field}" existe déjà (tri corrigé)`);
       continue;
     }
     await directusRequest(`/fields/${def.collection}`, {
       method: 'POST',
-      body: JSON.stringify(field),
+      body: JSON.stringify({ ...field, meta: { ...field.meta, sort } }),
     });
     console.log(`  ✓ champ "${def.collection}.${field.field}" créé`);
   }
