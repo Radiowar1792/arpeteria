@@ -1524,7 +1524,7 @@ main {
     border-color var(--transition-rapide);
 }
 
-.frise__carte:hover .frise__marqueur {
+.frise__etape:hover .frise__marqueur {
   background: var(--arpeteria-rouge);
   border-color: var(--arpeteria-rouge);
 }

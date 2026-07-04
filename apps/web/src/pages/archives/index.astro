@@ -26,8 +26,8 @@ for (const oeuvre of oeuvres) {
         const nombre = nombreParCategorie.get(categorie.slug) ?? 0;
         return (
           <li class="frise__etape">
+            <span class="frise__marqueur" aria-hidden="true"></span>
             <a class="frise__carte" href={`/archives/${categorie.slug}`}>
-              <span class="frise__marqueur" aria-hidden="true"></span>
               <h2>{categorie.nom}</h2>
               {categorie.description && <p>{categorie.description}</p>}
               <span class="frise__nombre">
