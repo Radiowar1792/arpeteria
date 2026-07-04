@@ -1,24 +1,63 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getCategories } from '../../lib/directus.ts';
+import { getCategories, getOeuvres } from '../../lib/directus.ts';
 import { SECTIONS } from '../../lib/taxonomies.ts';
 
 const section = SECTIONS.contemporain;
-const categories = await getCategories('contemporain');
+const [categories, oeuvres] = await Promise.all([
+  getCategories('contemporain'),
+  getOeuvres({ section: 'contemporain' }),
+]);
+
+const nombreParCategorie = new Map<string, number>();
+for (const oeuvre of oeuvres) {
+  if (!oeuvre.categorie) continue;
+  nombreParCategorie.set(oeuvre.categorie.slug, (nombreParCategorie.get(oeuvre.categorie.slug) ?? 0) + 1);
+}
+
+// Illustrations par discipline — en attendant un champ image dédié côté Directus pour les
+// catégories, une correspondance slug → fichier statique suffit pour ce cas ponctuel.
+// Ajoute une entrée par discipline au fur et à mesure des images fournies.
+const ILLUSTRATIONS_DISCIPLINES: Record<string, string> = {};
 ---
 <Base title={section.label} description={section.description}>
   <main id="contenu-principal">
+    <p class="kicker">Parcourir par discipline</p>
     <h1>{section.label}</h1>
     <p>{section.description}</p>
-    <ul class="grille-categories">
-      {categories.map((categorie) => (
-        <li>
-          <a href={`/contemporain/${categorie.slug}`}>
-            <h2>{categorie.nom}</h2>
-            {categorie.description && <p>{categorie.description}</p>}
-          </a>
-        </li>
-      ))}
-    </ul>
+
+    <ol class="frise">
+      {categories.map((categorie) => {
+        const nombre = nombreParCategorie.get(categorie.slug) ?? 0;
+        const illustration = ILLUSTRATIONS_DISCIPLINES[categorie.slug];
+        return (
+          <li class="frise__etape">
+            <span class="frise__marqueur" aria-hidden="true"></span>
+            <a class:list={['frise__carte', { 'frise__carte--illustree': illustration }]} href={`/contemporain/${categorie.slug}`}>
+              <div class="frise__contenu">
+                <h2>{categorie.nom}</h2>
+                {categorie.description && <p>{categorie.description}</p>}
+                <span class="frise__nombre">
+                  {nombre} {nombre > 1 ? 'œuvres' : 'œuvre'}
+                </span>
+              </div>
+              {illustration && (
+                <div class="frise__illustration-cadre">
+                  <img
+                    class="frise__illustration"
+                    src={illustration}
+                    alt=""
+                    width="960"
+                    height="640"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              )}
+            </a>
+          </li>
+        );
+      })}
+    </ol>
   </main>
 </Base>

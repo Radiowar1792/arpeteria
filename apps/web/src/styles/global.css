@@ -872,7 +872,6 @@ main {
 }
 
 /* ── Grilles ── */
-.grille-categories,
 .grille-oeuvres,
 .grille-recommandations {
   list-style: none;
@@ -880,10 +879,6 @@ main {
   padding: 0;
   display: grid;
   gap: 1.5rem;
-}
-
-.grille-categories {
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
 }
 
 .grille-recommandations {
@@ -933,59 +928,26 @@ main {
   color: var(--arpeteria-blanc);
 }
 
-.grille-categories li,
 .grille-oeuvres li {
   animation: entree-douce var(--transition-douce) both;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .grille-categories li:nth-child(2),
   .grille-oeuvres li:nth-child(2) {
     animation-delay: 40ms;
   }
-  .grille-categories li:nth-child(3),
   .grille-oeuvres li:nth-child(3) {
     animation-delay: 80ms;
   }
-  .grille-categories li:nth-child(4),
   .grille-oeuvres li:nth-child(4) {
     animation-delay: 120ms;
   }
-  .grille-categories li:nth-child(5),
   .grille-oeuvres li:nth-child(5) {
     animation-delay: 160ms;
   }
-  .grille-categories li:nth-child(n + 6),
   .grille-oeuvres li:nth-child(n + 6) {
     animation-delay: 200ms;
   }
-}
-
-.grille-categories li {
-  border: 1px solid var(--arpeteria-bordure);
-  border-radius: 0.6rem;
-  padding: 1.4rem;
-  transition:
-    transform var(--transition-douce),
-    box-shadow var(--transition-douce),
-    border-color var(--transition-douce);
-}
-
-.grille-categories li:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--ombre-forte);
-  border-color: var(--arpeteria-rouge-clair);
-}
-
-.grille-categories a {
-  text-decoration: none;
-  color: inherit;
-}
-
-.grille-categories h2 {
-  color: var(--arpeteria-rouge);
-  margin: 0 0 0.5rem;
-  font-size: 1.2rem;
 }
 
 /* ── Carte œuvre ── */
