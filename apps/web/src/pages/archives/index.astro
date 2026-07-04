@@ -14,6 +14,12 @@ for (const oeuvre of oeuvres) {
   if (!oeuvre.categorie) continue;
   nombreParCategorie.set(oeuvre.categorie.slug, (nombreParCategorie.get(oeuvre.categorie.slug) ?? 0) + 1);
 }
+
+// Illustrations par période — en attendant un champ image dédié côté Directus pour les
+// catégories, une correspondance slug → fichier statique suffit pour ce cas ponctuel.
+const ILLUSTRATIONS_PERIODES: Record<string, string> = {
+  'periode-medievale': '/images/categories/periode-medievale.jpg',
+};
 ---
 <Base title={section.label} description={section.description}>
   <main id="contenu-principal">
@@ -24,15 +30,29 @@ for (const oeuvre of oeuvres) {
     <ol class="frise">
       {categories.map((categorie) => {
         const nombre = nombreParCategorie.get(categorie.slug) ?? 0;
+        const illustration = ILLUSTRATIONS_PERIODES[categorie.slug];
         return (
           <li class="frise__etape">
             <span class="frise__marqueur" aria-hidden="true"></span>
-            <a class="frise__carte" href={`/archives/${categorie.slug}`}>
-              <h2>{categorie.nom}</h2>
-              {categorie.description && <p>{categorie.description}</p>}
-              <span class="frise__nombre">
-                {nombre} {nombre > 1 ? 'œuvres' : 'œuvre'}
-              </span>
+            <a class:list={['frise__carte', { 'frise__carte--illustree': illustration }]} href={`/archives/${categorie.slug}`}>
+              {illustration && (
+                <img
+                  class="frise__illustration"
+                  src={illustration}
+                  alt=""
+                  width="480"
+                  height="360"
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
+              <div class="frise__contenu">
+                <h2>{categorie.nom}</h2>
+                {categorie.description && <p>{categorie.description}</p>}
+                <span class="frise__nombre">
+                  {nombre} {nombre > 1 ? 'œuvres' : 'œuvre'}
+                </span>
+              </div>
             </a>
           </li>
         );
