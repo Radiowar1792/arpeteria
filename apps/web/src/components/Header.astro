@@ -24,18 +24,32 @@ const liens = [
       <span class="site-header__nom">Arpeteria</span>
     </a>
 
-    <button
-      type="button"
-      class="site-header__bascule"
-      id="bascule-menu"
-      aria-expanded="false"
-      aria-controls="nav-principale"
-      aria-label="Ouvrir le menu"
-    >
-      <span class="site-header__barre"></span>
-      <span class="site-header__barre"></span>
-      <span class="site-header__barre"></span>
-    </button>
+    <div class="site-header__outils">
+      <button type="button" class="theme-bascule" id="bascule-theme" aria-label="Changer de thème clair/sombre">
+        <svg class="theme-bascule__icone theme-bascule__icone--soleil" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M12 4a1 1 0 0 1-1-1V2a1 1 0 1 1 2 0v1a1 1 0 0 1-1 1Zm0 16a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1ZM4 12a1 1 0 0 1-1 1H2a1 1 0 1 1 0-2h1a1 1 0 0 1 1 1Zm18 0a1 1 0 0 1-1 1h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 1 1ZM5.64 18.36a1 1 0 0 1-1.42-1.42l.71-.7a1 1 0 0 1 1.41 1.41l-.7.71Zm11.31-11.31a1 1 0 0 1-1.41-1.41l.7-.71a1 1 0 1 1 1.42 1.42l-.71.7ZM5.64 5.64a1 1 0 0 1 1.41 0l.71.7a1 1 0 1 1-1.41 1.42l-.71-.71a1 1 0 0 1 0-1.41Zm11.31 11.31a1 1 0 0 1 1.42 0l.7.71a1 1 0 0 1-1.41 1.41l-.71-.7a1 1 0 0 1 0-1.42ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z"
+          />
+        </svg>
+        <svg class="theme-bascule__icone theme-bascule__icone--lune" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        class="site-header__bascule"
+        id="bascule-menu"
+        aria-expanded="false"
+        aria-controls="nav-principale"
+        aria-label="Ouvrir le menu"
+      >
+        <span class="site-header__barre"></span>
+        <span class="site-header__barre"></span>
+        <span class="site-header__barre"></span>
+      </button>
+    </div>
 
     <nav class="site-header__nav" id="nav-principale" aria-label="Navigation principale">
       {menus.map((menu) => (
@@ -92,6 +106,17 @@ const liens = [
           nav.classList.remove('site-header__nav--ouvert');
           bascule.setAttribute('aria-expanded', 'false');
         }
+      });
+    }
+
+    const basculeTheme = document.getElementById('bascule-theme');
+    if (basculeTheme && !basculeTheme.dataset.pret) {
+      basculeTheme.dataset.pret = 'true';
+      basculeTheme.addEventListener('click', () => {
+        const actuel = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        const suivant = actuel === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', suivant);
+        localStorage.setItem('arpeteria-theme', suivant);
       });
     }
 

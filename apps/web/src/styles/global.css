@@ -19,6 +19,22 @@
 
   --transition-rapide: 180ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-douce: 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  --fond: var(--arpeteria-blanc);
+  --fond-alt: var(--arpeteria-gris-perle);
+  --surface: var(--arpeteria-blanc);
+  --remplissage: var(--arpeteria-gris-clair);
+  --texte: var(--arpeteria-noir);
+  --texte-attenue: var(--arpeteria-gris);
+}
+
+[data-theme='dark'] {
+  --fond: #14100d;
+  --fond-alt: #1c1712;
+  --surface: #201a15;
+  --remplissage: #2a231d;
+  --texte: #f2ece6;
+  --texte-attenue: #b7ab9f;
+  --arpeteria-bordure: #3a3229;
 }
 
 *,
@@ -35,8 +51,8 @@ body {
   margin: 0;
   font-family: var(--police-editorial);
   font-size: 1.0625rem;
-  color: var(--arpeteria-noir);
-  background: var(--arpeteria-blanc);
+  color: var(--texte);
+  background: var(--fond);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -230,7 +246,49 @@ main {
   color: var(--arpeteria-rouge-clair);
 }
 
-/* ── Bascule menu mobile (hamburger) ── */
+/* ── Bascule thème + menu mobile (hamburger) ── */
+.site-header__outils {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.theme-bascule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--arpeteria-gris-clair);
+  cursor: pointer;
+  transition: color var(--transition-rapide);
+}
+
+.theme-bascule:hover {
+  color: var(--arpeteria-blanc);
+}
+
+.theme-bascule__icone {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.theme-bascule__icone--lune {
+  display: none;
+}
+
+[data-theme='dark'] .theme-bascule__icone--soleil {
+  display: none;
+}
+
+[data-theme='dark'] .theme-bascule__icone--lune {
+  display: block;
+}
+
 .site-header__bascule {
   display: flex;
   flex-direction: column;
@@ -240,7 +298,6 @@ main {
   width: 2.5rem;
   height: 2.5rem;
   padding: 0;
-  margin-left: auto;
   background: none;
   border: none;
   cursor: pointer;
@@ -429,21 +486,21 @@ main {
 
   .menu-deroulant__liste {
     padding: 0.4rem;
-    background: var(--arpeteria-blanc);
+    background: var(--surface);
     border: 1px solid var(--arpeteria-bordure);
     border-radius: 0.6rem;
     box-shadow: var(--ombre-forte);
   }
 
   .menu-deroulant__liste a {
-    color: var(--arpeteria-noir);
+    color: var(--texte);
     font-size: 0.9rem;
     font-weight: 500;
     white-space: nowrap;
   }
 
   .menu-deroulant__liste a:hover {
-    background: var(--arpeteria-gris-clair);
+    background: var(--remplissage);
     color: var(--arpeteria-rouge);
   }
 }
@@ -455,8 +512,8 @@ main {
   text-align: center;
   font-family: var(--police-interface);
   font-size: 0.85rem;
-  color: var(--arpeteria-gris);
-  background: var(--arpeteria-gris-perle);
+  color: var(--texte-attenue);
+  background: var(--fond-alt);
 }
 
 .site-footer__inner {
@@ -484,7 +541,7 @@ main {
 }
 
 .site-footer__nav a {
-  color: var(--arpeteria-gris);
+  color: var(--texte-attenue);
   text-decoration: none;
 }
 
@@ -495,7 +552,7 @@ main {
 .site-footer__copyright {
   margin: 0.5rem 0 0;
   font-size: 0.78rem;
-  color: var(--arpeteria-gris);
+  color: var(--texte-attenue);
   opacity: 0.8;
 }
 
@@ -526,7 +583,7 @@ main {
   line-height: 1;
   letter-spacing: -0.02em;
   margin: 0;
-  background: linear-gradient(135deg, var(--arpeteria-noir) 20%, var(--arpeteria-rouge) 80%);
+  background: linear-gradient(135deg, var(--texte) 20%, var(--arpeteria-rouge) 80%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -536,7 +593,7 @@ main {
   max-width: 38rem;
   margin: 0 auto 1.75rem;
   font-size: 1.1rem;
-  color: var(--arpeteria-gris);
+  color: var(--texte-attenue);
 }
 
 .hero__actions {
@@ -575,7 +632,7 @@ main {
 .chiffres__label {
   font-family: var(--police-interface);
   font-size: 0.85rem;
-  color: var(--arpeteria-gris);
+  color: var(--texte-attenue);
   margin: 0.4rem 0 0;
 }
 
@@ -602,12 +659,12 @@ main {
   gap: 2.5rem;
   padding: 3rem;
   margin: 3rem 0;
-  background: var(--arpeteria-gris-perle);
+  background: var(--fond-alt);
   border-radius: 1rem;
 }
 
 .mission__texte p {
-  color: var(--arpeteria-gris);
+  color: var(--texte-attenue);
 }
 
 .mission__texte p:last-child {
@@ -663,7 +720,7 @@ main {
   padding: 2rem;
   text-decoration: none;
   color: inherit;
-  background: var(--arpeteria-blanc);
+  background: var(--surface);
   border: 1px solid var(--arpeteria-bordure);
   border-top: 4px solid var(--arpeteria-rouge);
   border-radius: 0.75rem;
@@ -673,7 +730,7 @@ main {
 }
 
 .section-carte--contemporain {
-  border-top-color: var(--arpeteria-noir);
+  border-top-color: var(--texte);
 }
 
 .section-carte:hover {
@@ -686,7 +743,7 @@ main {
 }
 
 .section-carte p {
-  color: var(--arpeteria-gris);
+  color: var(--texte-attenue);
   margin: 0;
 }
 
@@ -735,7 +792,7 @@ main {
 .teaser-recommandations p {
   max-width: 34rem;
   margin: 0.75rem auto 1.5rem;
-  color: var(--arpeteria-gris);
+  color: var(--texte-attenue);
 }
 
 /* ── Boutons ── */
@@ -783,7 +840,7 @@ main {
 }
 
 .bouton--secondaire:hover {
-  background: var(--arpeteria-gris-clair);
+  background: var(--remplissage);
   color: var(--arpeteria-rouge-fonce);
 }
 
@@ -791,12 +848,12 @@ main {
 .fil-ariane {
   font-family: var(--police-interface);
   font-size: 0.85rem;
-  color: var(--arpeteria-gris);
+  color: var(--texte-attenue);
   margin-bottom: 1.5rem;
 }
 
 .fil-ariane a {
-  color: var(--arpeteria-gris);
+  color: var(--texte-attenue);
 }
 
 .fil-ariane a:hover {
@@ -845,8 +902,8 @@ main {
   padding: 0.45rem 1rem;
   border-radius: 3rem;
   border: 1px solid var(--arpeteria-bordure);
-  background: var(--arpeteria-blanc);
-  color: var(--arpeteria-gris);
+  background: var(--surface);
+  color: var(--texte-attenue);
   cursor: pointer;
   transition:
     background-color var(--transition-rapide),
@@ -930,7 +987,7 @@ main {
   border: 1px solid var(--arpeteria-bordure);
   border-radius: 0.6rem;
   overflow: hidden;
-  background: var(--arpeteria-blanc);
+  background: var(--surface);
   transition:
     transform var(--transition-douce),
     box-shadow var(--transition-douce),
@@ -945,7 +1002,7 @@ main {
 
 .carte-oeuvre__media {
   overflow: hidden;
-  background: var(--arpeteria-gris-clair);
+  background: var(--remplissage);
   aspect-ratio: 4 / 3;
   flex-shrink: 0;
 }
@@ -969,7 +1026,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(155deg, var(--arpeteria-gris-clair), var(--arpeteria-gris-perle));
+  background: linear-gradient(155deg, var(--remplissage), var(--fond-alt));
 }
 
 .carte-oeuvre__media-secours img {
@@ -1017,7 +1074,7 @@ main {
 .carte-oeuvre__date {
   margin: 0;
   font-size: 0.85rem;
-  color: var(--arpeteria-gris);
+  color: var(--texte-attenue);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1039,7 +1096,7 @@ main {
 .fiche-oeuvre__auteur,
 .fiche-oeuvre__date {
   font-family: var(--police-interface);
-  color: var(--arpeteria-gris);
+  color: var(--texte-attenue);
   margin: 0.1rem 0;
 }
 
@@ -1066,7 +1123,7 @@ main {
   border: 1px solid var(--arpeteria-bordure);
   border-radius: 0.75rem;
   overflow: hidden;
-  background: var(--arpeteria-blanc);
+  background: var(--surface);
   box-shadow: var(--ombre-douce);
 }
 
@@ -1118,7 +1175,7 @@ main {
 .lecteur-pdf__stage {
   position: relative;
   height: 80vh;
-  background: var(--arpeteria-gris-clair);
+  background: var(--remplissage);
 }
 
 .lecteur-pdf__stage--chargement .lecteur-pdf__cadre {
@@ -1161,7 +1218,7 @@ main {
   border: 1px solid var(--arpeteria-bordure);
   border-radius: 0.75rem;
   overflow: hidden;
-  background: var(--arpeteria-blanc);
+  background: var(--surface);
   box-shadow: var(--ombre-douce);
 }
 
@@ -1287,7 +1344,7 @@ main {
   border: 1px solid var(--arpeteria-bordure);
   border-radius: 0.75rem;
   overflow: hidden;
-  background: var(--arpeteria-blanc);
+  background: var(--surface);
   box-shadow: var(--ombre-douce);
   transition:
     transform var(--transition-douce),
@@ -1363,7 +1420,7 @@ main {
   overflow: hidden;
   font-family: var(--police-interface);
   font-size: 0.9rem;
-  color: var(--arpeteria-gris);
+  color: var(--texte-attenue);
   margin: 0 0 1rem;
 }
 
@@ -1415,7 +1472,7 @@ main {
 .page-404 p {
   max-width: 34rem;
   margin: 0 auto 1.75rem;
-  color: var(--arpeteria-gris);
+  color: var(--texte-attenue);
 }
 
 .page-404__actions {
@@ -1440,8 +1497,8 @@ main {
   font-family: var(--police-interface);
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--arpeteria-gris);
-  background: var(--arpeteria-gris-clair);
+  color: var(--texte-attenue);
+  background: var(--remplissage);
   padding: 0.35rem 0.85rem;
   border-radius: 3rem;
   text-decoration: none;
@@ -1534,7 +1591,7 @@ main {
   text-decoration: none;
   color: inherit;
   padding: 1.4rem 1.6rem;
-  background: linear-gradient(155deg, var(--arpeteria-blanc), var(--arpeteria-gris-perle));
+  background: linear-gradient(155deg, var(--surface), var(--fond-alt));
   border: 1px solid var(--arpeteria-bordure);
   border-left: 3px solid var(--arpeteria-or-clair);
   border-radius: 0.25rem 0.75rem 0.75rem 0.25rem;
@@ -1559,7 +1616,7 @@ main {
 }
 
 .frise__carte p {
-  color: var(--arpeteria-gris);
+  color: var(--texte-attenue);
   margin: 0 0 0.75rem;
 }
 
@@ -1571,7 +1628,7 @@ main {
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--arpeteria-or);
-  background: var(--arpeteria-gris-clair);
+  background: var(--remplissage);
   padding: 0.25rem 0.7rem;
   border-radius: 3rem;
 }
@@ -1605,7 +1662,7 @@ main {
   .fiche-oeuvre__description a[href]::after {
     content: ' (' attr(href) ')';
     font-size: 0.8em;
-    color: var(--arpeteria-gris);
+    color: var(--texte-attenue);
   }
 
   body {
