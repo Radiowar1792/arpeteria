@@ -35,17 +35,6 @@ const ILLUSTRATIONS_PERIODES: Record<string, string> = {
           <li class="frise__etape">
             <span class="frise__marqueur" aria-hidden="true"></span>
             <a class:list={['frise__carte', { 'frise__carte--illustree': illustration }]} href={`/archives/${categorie.slug}`}>
-              {illustration && (
-                <img
-                  class="frise__illustration"
-                  src={illustration}
-                  alt=""
-                  width="480"
-                  height="360"
-                  loading="lazy"
-                  decoding="async"
-                />
-              )}
               <div class="frise__contenu">
                 <h2>{categorie.nom}</h2>
                 {categorie.description && <p>{categorie.description}</p>}
@@ -53,6 +42,19 @@ const ILLUSTRATIONS_PERIODES: Record<string, string> = {
                   {nombre} {nombre > 1 ? 'œuvres' : 'œuvre'}
                 </span>
               </div>
+              {illustration && (
+                <div class="frise__illustration-cadre">
+                  <img
+                    class="frise__illustration"
+                    src={illustration}
+                    alt=""
+                    width="960"
+                    height="640"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              )}
             </a>
           </li>
         );
