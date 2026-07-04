@@ -18,7 +18,14 @@ for (const oeuvre of oeuvres) {
 // Illustrations par discipline — en attendant un champ image dédié côté Directus pour les
 // catégories, une correspondance slug → fichier statique suffit pour ce cas ponctuel.
 // Ajoute une entrée par discipline au fur et à mesure des images fournies.
-const ILLUSTRATIONS_DISCIPLINES: Record<string, string> = {};
+const ILLUSTRATIONS_DISCIPLINES: Record<string, string> = {
+  science: '/images/categories/science.jpg',
+  'chansons-et-poesie': '/images/categories/chansons-et-poesie.jpg',
+  'arts-visuels': '/images/categories/arts-visuels.jpg',
+  videos: '/images/categories/videos.jpg',
+  grammaires: '/images/categories/grammaires.jpg',
+  lexicographie: '/images/categories/lexicographie.jpg',
+};
 ---
 <Base title={section.label} description={section.description}>
   <main id="contenu-principal">
