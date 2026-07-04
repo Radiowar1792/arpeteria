@@ -5,6 +5,7 @@ import BreadcrumbSchema from '../../../components/BreadcrumbSchema.astro';
 import FiltreLangues from '../../../components/FiltreLangues.astro';
 import { getCategories, getOeuvres, type Categorie, type Langue } from '../../../lib/directus.ts';
 import { canonicalUrl } from '../../../lib/seo.ts';
+import { ILLUSTRATIONS_PERIODES } from '../../../lib/illustrations.ts';
 
 export async function getStaticPaths() {
   const categories = await getCategories('archives');
@@ -20,6 +21,7 @@ interface Props {
 const { categorie } = Astro.props;
 const oeuvres = await getOeuvres({ categorieSlug: categorie.slug });
 const langues = Array.from(new Set(oeuvres.map((o) => o.langue).filter((l): l is Langue => Boolean(l))));
+const illustration = ILLUSTRATIONS_PERIODES[categorie.slug];
 const filAriane = [
   { name: 'Accueil', url: canonicalUrl('/') },
   { name: 'Archives', url: canonicalUrl('/archives') },
@@ -29,6 +31,11 @@ const filAriane = [
 <Base title={categorie.nom} description={categorie.description ?? undefined}>
   <BreadcrumbSchema items={filAriane} />
   <main id="contenu-principal">
+    {illustration && (
+      <div class="categorie-bandeau">
+        <img src={illustration} alt="" width="960" height="640" loading="eager" decoding="async" />
+      </div>
+    )}
     <nav class="fil-ariane" aria-label="Fil d'Ariane">
       <a href="/">Accueil</a> › <a href="/archives">Archives</a>
     </nav>

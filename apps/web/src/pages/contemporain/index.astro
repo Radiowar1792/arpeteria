@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { getCategories, getOeuvres } from '../../lib/directus.ts';
 import { SECTIONS } from '../../lib/taxonomies.ts';
+import { ILLUSTRATIONS_DISCIPLINES } from '../../lib/illustrations.ts';
 
 const section = SECTIONS.contemporain;
 const [categories, oeuvres] = await Promise.all([
@@ -14,18 +15,6 @@ for (const oeuvre of oeuvres) {
   if (!oeuvre.categorie) continue;
   nombreParCategorie.set(oeuvre.categorie.slug, (nombreParCategorie.get(oeuvre.categorie.slug) ?? 0) + 1);
 }
-
-// Illustrations par discipline — en attendant un champ image dédié côté Directus pour les
-// catégories, une correspondance slug → fichier statique suffit pour ce cas ponctuel.
-// Ajoute une entrée par discipline au fur et à mesure des images fournies.
-const ILLUSTRATIONS_DISCIPLINES: Record<string, string> = {
-  science: '/images/categories/science.jpg',
-  'chansons-et-poesie': '/images/categories/chansons-et-poesie.jpg',
-  'arts-visuels': '/images/categories/arts-visuels.jpg',
-  videos: '/images/categories/videos.jpg',
-  grammaires: '/images/categories/grammaires.jpg',
-  lexicographie: '/images/categories/lexicographie.jpg',
-};
 ---
 <Base title={section.label} description={section.description}>
   <main id="contenu-principal">

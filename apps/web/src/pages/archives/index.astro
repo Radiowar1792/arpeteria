@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { getCategories, getOeuvres } from '../../lib/directus.ts';
 import { SECTIONS } from '../../lib/taxonomies.ts';
+import { ILLUSTRATIONS_PERIODES } from '../../lib/illustrations.ts';
 
 const section = SECTIONS.archives;
 const [categories, oeuvres] = await Promise.all([
@@ -14,18 +15,6 @@ for (const oeuvre of oeuvres) {
   if (!oeuvre.categorie) continue;
   nombreParCategorie.set(oeuvre.categorie.slug, (nombreParCategorie.get(oeuvre.categorie.slug) ?? 0) + 1);
 }
-
-// Illustrations par période — en attendant un champ image dédié côté Directus pour les
-// catégories, une correspondance slug → fichier statique suffit pour ce cas ponctuel.
-const ILLUSTRATIONS_PERIODES: Record<string, string> = {
-  'periode-medievale': '/images/categories/periode-medievale.jpg',
-  renaissance: '/images/categories/renaissance.jpg',
-  'xviie-siecle': '/images/categories/xviie-siecle.jpg',
-  'xixe-siecle': '/images/categories/xixe-siecle.jpg',
-  'debut-xxe-siecle': '/images/categories/debut-xxe-siecle.jpg',
-  'fin-xxe-siecle': '/images/categories/fin-xxe-siecle.jpg',
-  'debut-xxie-siecle': '/images/categories/debut-xxie-siecle.jpg',
-};
 ---
 <Base title={section.label} description={section.description}>
   <main id="contenu-principal">
