@@ -11,7 +11,7 @@ const { oeuvre } = Astro.props;
     {oeuvre.couverture ? (
       <img
         class="carte-oeuvre__image"
-        src={assetUrl(oeuvre.couverture.id)}
+        src={assetUrl(oeuvre.couverture.id, { width: 480, height: 360 })}
         alt=""
         loading="lazy"
         width="400"
@@ -25,7 +25,7 @@ const { oeuvre } = Astro.props;
     )}
   </div>
   <div class="carte-oeuvre__contenu">
-    <h3 transition:name={`titre-${oeuvre.id}`}>{oeuvre.titre}</h3>
+    <h3 lang={oeuvre.langue ?? 'fr'} transition:name={`titre-${oeuvre.id}`}>{oeuvre.titre}</h3>
     <div class="carte-oeuvre__meta">
       {oeuvre.auteur && <p class="carte-oeuvre__auteur">{oeuvre.auteur}</p>}
       {oeuvre.date_oeuvre && <p class="carte-oeuvre__date">{oeuvre.date_oeuvre}</p>}

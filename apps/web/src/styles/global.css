@@ -1575,3 +1575,52 @@ main {
   padding: 0.25rem 0.7rem;
   border-radius: 3rem;
 }
+
+/* ── Impression ── */
+@media print {
+  .site-header,
+  .site-footer,
+  .barre-progression,
+  .bouton-haut,
+  .lien-evitement,
+  .hero__actions,
+  .bouton,
+  .lecteur-pdf,
+  .lecteur-video,
+  .mots-cles,
+  .section-liee,
+  .filtre-langues,
+  .chiffres,
+  .sections-cles,
+  .teaser-recommandations,
+  .theme-bascule {
+    display: none !important;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .fiche-oeuvre__description a[href]::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.8em;
+    color: var(--arpeteria-gris);
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+    font-size: 12pt;
+  }
+
+  main {
+    max-width: none;
+    padding: 0;
+  }
+
+  .fiche-oeuvre__couverture {
+    max-width: 12rem;
+    box-shadow: none;
+  }
+}

@@ -15,7 +15,7 @@ interface Props {
 }
 const { oeuvre } = Astro.props;
 const url = canonicalUrl(`/oeuvre/${oeuvre.slug}`);
-const image = oeuvre.couverture ? assetUrl(oeuvre.couverture.id) : undefined;
+const image = oeuvre.couverture ? assetUrl(oeuvre.couverture.id, { width: 800 }) : undefined;
 const sectionLabel = oeuvre.section === 'archives' ? 'Archives' : 'Contemporain';
 
 const oeuvresLiees = (
@@ -61,12 +61,12 @@ const filAriane = [
       />
     )}
 
-    <h1 transition:name={`titre-${oeuvre.id}`}>{oeuvre.titre}</h1>
+    <h1 lang={oeuvre.langue ?? 'fr'} transition:name={`titre-${oeuvre.id}`}>{oeuvre.titre}</h1>
     {oeuvre.auteur && <p class="fiche-oeuvre__auteur">{oeuvre.auteur}</p>}
     {oeuvre.date_oeuvre && <p class="fiche-oeuvre__date">{oeuvre.date_oeuvre}</p>}
 
     {oeuvre.description && (
-      <div class="fiche-oeuvre__description" set:html={oeuvre.description} />
+      <div class="fiche-oeuvre__description" lang={oeuvre.langue ?? 'fr'} set:html={oeuvre.description} />
     )}
 
     {oeuvre.type_media === 'pdf' && oeuvre.fichier_pdf && (

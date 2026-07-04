@@ -116,6 +116,27 @@ export async function getRecommandations(): Promise<Recommandation[]> {
   return (await directusFetch<Recommandation[]>('/items/recommandations?sort=ordre')) ?? [];
 }
 
-export function assetUrl(fileId: string): string {
-  return `${DIRECTUS_PUBLIC_URL}/assets/${fileId}`;
+interface OptionsTransformation {
+  width?: number;
+  height?: number;
+  quality?: number;
+  format?: 'webp' | 'avif' | 'jpg' | 'png';
+}
+
+/**
+ * URL d'un fichier Directus. Avec des options, utilise la transformation d'image à la
+ * volée de Directus (redimensionnement + conversion de format côté serveur) plutôt que
+ * de servir le fichier original en pleine résolution pour un simple vignette de 300px.
+ */
+export function assetUrl(fileId: string, options: OptionsTransformation = {}): string {
+  const params = new URLSearchParams();
+  if (options.width) params.set('width', String(options.width));
+  if (options.height) params.set('height', String(options.height));
+  if (options.width || options.height) {
+    params.set('fit', 'cover');
+    params.set('quality', String(options.quality ?? 82));
+    params.set('format', options.format ?? 'webp');
+  }
+  const query = params.toString();
+  return `${DIRECTUS_PUBLIC_URL}/assets/${fileId}${query ? `?${query}` : ''}`;
 }
