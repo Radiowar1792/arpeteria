@@ -24,11 +24,18 @@ const canonical = canonicalUrl(Astro.url.pathname);
     <meta charset="utf-8" />
     <script is:inline>
       (function () {
-        try {
-          var stocke = localStorage.getItem('arpeteria-theme');
-          var theme = stocke || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-          document.documentElement.setAttribute('data-theme', theme);
-        } catch (e) {}
+        function appliquerTheme() {
+          try {
+            var stocke = localStorage.getItem('arpeteria-theme');
+            document.documentElement.setAttribute('data-theme', stocke === 'dark' ? 'dark' : 'light');
+          } catch (e) {}
+        }
+        appliquerTheme();
+        // Les transitions de page d'Astro (ClientRouter) réconcilient les attributs de <html>
+        // avec ceux de la page HTML brute reçue (qui n'a jamais data-theme, posé uniquement
+        // par ce script) : sans ce ré-appel après chaque swap, le thème repassait en clair
+        // à chaque changement de page.
+        document.addEventListener('astro:after-swap', appliquerTheme);
       })();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />

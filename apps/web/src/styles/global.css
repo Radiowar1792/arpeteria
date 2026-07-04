@@ -28,13 +28,13 @@
 }
 
 [data-theme='dark'] {
-  --fond: #14100d;
-  --fond-alt: #1c1712;
-  --surface: #201a15;
-  --remplissage: #2a231d;
-  --texte: #f2ece6;
-  --texte-attenue: #b7ab9f;
-  --arpeteria-bordure: #3a3229;
+  --fond: #221f1b;
+  --fond-alt: #2a2621;
+  --surface: #2d2924;
+  --remplissage: #383330;
+  --texte: #e6e0d8;
+  --texte-attenue: #a89e93;
+  --arpeteria-bordure: #48423b;
 }
 
 *,
