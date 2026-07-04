@@ -9,6 +9,7 @@ export interface Categorie {
   section: Section;
   ordre: number;
   description: string | null;
+  image: string | null;
 }
 
 export interface DirectusFile {

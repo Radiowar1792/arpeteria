@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { getCategories, getOeuvres } from '../../lib/directus.ts';
 import { SECTIONS } from '../../lib/taxonomies.ts';
-import { ILLUSTRATIONS_PERIODES } from '../../lib/illustrations.ts';
+import { ILLUSTRATIONS_PERIODES, illustrationCategorie } from '../../lib/illustrations.ts';
 
 const section = SECTIONS.archives;
 const [categories, oeuvres] = await Promise.all([
@@ -25,7 +25,7 @@ for (const oeuvre of oeuvres) {
     <ol class="frise">
       {categories.map((categorie) => {
         const nombre = nombreParCategorie.get(categorie.slug) ?? 0;
-        const illustration = ILLUSTRATIONS_PERIODES[categorie.slug];
+        const illustration = illustrationCategorie(categorie, ILLUSTRATIONS_PERIODES);
         return (
           <li class="frise__etape">
             <span class="frise__marqueur" aria-hidden="true"></span>

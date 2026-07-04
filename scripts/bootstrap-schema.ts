@@ -79,6 +79,11 @@ const collections: CollectionDef[] = [
         schema: { default_value: 0 },
       },
       { field: 'description', type: 'text', meta: { interface: 'input-multiline' } },
+      {
+        field: 'image',
+        type: 'uuid',
+        meta: { interface: 'file-image', special: ['file'] },
+      },
     ],
   },
   {
@@ -215,6 +220,7 @@ const relations: RelationDef[] = [
   { collection: 'oeuvres', field: 'categorie', related_collection: 'categories' },
   { collection: 'oeuvres', field: 'fichier_pdf', related_collection: 'directus_files' },
   { collection: 'oeuvres', field: 'couverture', related_collection: 'directus_files' },
+  { collection: 'categories', field: 'image', related_collection: 'directus_files' },
 ];
 
 async function ensureCollection(def: CollectionDef) {

@@ -1,6 +1,9 @@
-// Illustrations par catégorie — en attendant un champ image dédié côté Directus, une
-// correspondance slug → fichier statique suffit pour ce cas ponctuel. Partagé entre les
-// pages de section (frise) et les pages de sous-catégorie (bandeau).
+import { assetUrl, type Categorie } from './directus.ts';
+
+// Un vrai champ `image` existe maintenant sur la collection `categories` dans Directus —
+// voir scripts/bootstrap-schema.ts. Ces correspondances slug → fichier statique ne servent
+// plus que de repli pour les catégories où ce champ n'est pas encore renseigné (ou pour un
+// déploiement dont le schéma n'a pas encore ce champ).
 
 export const ILLUSTRATIONS_PERIODES: Record<string, string> = {
   'periode-medievale': '/images/categories/periode-medievale.webp',
@@ -20,3 +23,11 @@ export const ILLUSTRATIONS_DISCIPLINES: Record<string, string> = {
   grammaires: '/images/categories/grammaires.webp',
   lexicographie: '/images/categories/lexicographie.webp',
 };
+
+/** Image Directus de la catégorie si renseignée, sinon repli sur le mapping codé en dur. */
+export function illustrationCategorie(categorie: Categorie, repli: Record<string, string>): string | undefined {
+  if (categorie.image) {
+    return assetUrl(categorie.image, { width: 960, height: 640 });
+  }
+  return repli[categorie.slug];
+}
