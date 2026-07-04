@@ -1,21 +1,56 @@
 ---
 import type { Oeuvre } from '../lib/directus.ts';
+import { extraireIdYoutube } from '../lib/youtube.ts';
 
 interface Props {
   oeuvre: Oeuvre;
   url: string;
+  image?: string;
 }
-const { oeuvre, url } = Astro.props;
+const { oeuvre, url, image } = Astro.props;
 
-const schema = {
+const description = oeuvre.description ? oeuvre.description.replace(/<[^>]+>/g, '') : undefined;
+const auteur = oeuvre.auteur ? { author: { '@type': 'Person', name: oeuvre.auteur } } : {};
+
+const base = {
   '@context': 'https://schema.org',
-  '@type': 'CreativeWork',
   name: oeuvre.titre,
   url,
   inLanguage: oeuvre.langue ?? 'fr',
-  ...(oeuvre.auteur ? { author: { '@type': 'Person', name: oeuvre.auteur } } : {}),
-  ...(oeuvre.description ? { description: oeuvre.description.replace(/<[^>]+>/g, '') } : {}),
+  ...auteur,
+  ...(description ? { description } : {}),
   ...(oeuvre.date_publication ? { datePublished: oeuvre.date_publication } : {}),
+  ...(image ? { image } : {}),
 };
+
+let schema: Record<string, unknown>;
+
+if (oeuvre.type_media === 'pdf') {
+  // Beaucoup d'œuvres archivées sont des imprimés/manuscrits numérisés — "Book" les rend
+  // éligibles au balisage enrichi de Google pour les ouvrages, plus pertinent qu'un simple
+  // document numérique générique pour ce fonds.
+  schema = { ...base, '@type': 'Book', bookFormat: 'https://schema.org/EBook' };
+} else if (oeuvre.type_media === 'video') {
+  const idYoutube = oeuvre.url_externe ? extraireIdYoutube(oeuvre.url_externe) : null;
+  schema = {
+    ...base,
+    '@type': 'VideoObject',
+    thumbnailUrl: image,
+    uploadDate: oeuvre.date_publication,
+    ...(idYoutube
+      ? { embedUrl: `https://www.youtube-nocookie.com/embed/${idYoutube}` }
+      : oeuvre.url_externe
+        ? { contentUrl: oeuvre.url_externe }
+        : {}),
+  };
+} else if (oeuvre.type_media === 'audio') {
+  schema = {
+    ...base,
+    '@type': 'AudioObject',
+    ...(oeuvre.url_externe ? { contentUrl: oeuvre.url_externe } : {}),
+  };
+} else {
+  schema = { ...base, '@type': 'CreativeWork' };
+}
 ---
 <script type="application/ld+json" set:html={JSON.stringify(schema)} />

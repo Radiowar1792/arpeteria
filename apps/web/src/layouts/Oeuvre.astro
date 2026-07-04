@@ -9,6 +9,7 @@ import CarteOeuvre from '../components/CarteOeuvre.astro';
 import { assetUrl, getOeuvres, type Oeuvre } from '../lib/directus.ts';
 import { canonicalUrl } from '../lib/seo.ts';
 import { slugifierMotCle } from '../lib/motscles.ts';
+import { LABELS_LANGUE } from '../lib/langues.ts';
 
 interface Props {
   oeuvre: Oeuvre;
@@ -17,6 +18,12 @@ const { oeuvre } = Astro.props;
 const url = canonicalUrl(`/oeuvre/${oeuvre.slug}`);
 const image = oeuvre.couverture ? assetUrl(oeuvre.couverture.id, { width: 800, height: 600 }) : undefined;
 const sectionLabel = oeuvre.section === 'archives' ? 'Archives' : 'Contemporain';
+const LABELS_TYPE: Record<Oeuvre['type_media'], string> = {
+  pdf: 'PDF',
+  video: 'Vidéo',
+  audio: 'Audio',
+  lien: 'Lien',
+};
 
 const oeuvresLiees = (
   await getOeuvres(
@@ -40,7 +47,7 @@ const filAriane = [
 ];
 ---
 <Base title={oeuvre.titre} description={oeuvre.description ?? undefined} image={image}>
-  <SchemaOrg oeuvre={oeuvre} url={url} />
+  <SchemaOrg oeuvre={oeuvre} url={url} image={image} />
   <BreadcrumbSchema items={filAriane} />
   <main id="contenu-principal" class="fiche-oeuvre">
     <nav class="fil-ariane" aria-label="Fil d'Ariane">
@@ -65,6 +72,15 @@ const filAriane = [
     )}
 
     <h1 lang={oeuvre.langue ?? 'fr'} transition:name={`titre-${oeuvre.id}`}>{oeuvre.titre}</h1>
+
+    {/* Métadonnées pour les facettes de recherche Pagefind — non visibles, redondantes avec
+        le fil d'Ariane/la visionneuse/l'attribut lang déjà affichés sur la page. */}
+    <div style="display:none" aria-hidden="true">
+      <span data-pagefind-filter="Section">{sectionLabel}</span>
+      <span data-pagefind-filter="Type">{LABELS_TYPE[oeuvre.type_media]}</span>
+      {oeuvre.langue && <span data-pagefind-filter="Langue">{LABELS_LANGUE[oeuvre.langue]}</span>}
+      {oeuvre.categorie && <span data-pagefind-filter="Catégorie">{oeuvre.categorie.nom}</span>}
+    </div>
     {oeuvre.auteur && <p class="fiche-oeuvre__auteur">{oeuvre.auteur}</p>}
     {oeuvre.date_oeuvre && <p class="fiche-oeuvre__date">{oeuvre.date_oeuvre}</p>}
 

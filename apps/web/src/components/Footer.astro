@@ -1,4 +1,6 @@
 ---
+import { getOeuvres } from '../lib/directus.ts';
+
 const annee = new Date().getFullYear();
 const liens = [
   { href: '/archives', label: 'Archives' },
@@ -7,6 +9,9 @@ const liens = [
   { href: '/a-propos', label: 'À propos' },
   { href: '/rss.xml', label: 'Flux RSS' },
 ];
+
+const oeuvres = await getOeuvres();
+const slugsAlea = oeuvres.map((o) => o.slug);
 ---
 <footer class="site-footer">
   <div class="site-footer__inner">
@@ -16,7 +21,36 @@ const liens = [
     </p>
     <nav class="site-footer__nav" aria-label="Navigation du pied de page">
       {liens.map((lien) => <a href={lien.href}>{lien.label}</a>)}
+      {slugsAlea.length > 0 && (
+        <a href="#" id="lien-oeuvre-alea">Œuvre au hasard</a>
+      )}
     </nav>
     <p class="site-footer__copyright">© {annee} Arpeteria</p>
   </div>
+  {slugsAlea.length > 0 && (
+    <script type="application/json" id="donnees-oeuvre-alea" is:inline set:html={JSON.stringify(slugsAlea)} />
+  )}
 </footer>
+
+<script>
+  function initOeuvreAlea() {
+    const lien = document.getElementById('lien-oeuvre-alea');
+    const donnees = document.getElementById('donnees-oeuvre-alea');
+    if (!lien || !donnees || lien.dataset.pret) return;
+    lien.dataset.pret = 'true';
+
+    lien.addEventListener('click', (evenement) => {
+      evenement.preventDefault();
+      try {
+        const slugs: string[] = JSON.parse(donnees.textContent || '[]');
+        if (slugs.length === 0) return;
+        const choix = slugs[Math.floor(Math.random() * slugs.length)];
+        window.location.href = `/oeuvre/${choix}`;
+      } catch (e) {
+        // silencieux : au pire le lien ne fait rien
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', initOeuvreAlea);
+</script>
