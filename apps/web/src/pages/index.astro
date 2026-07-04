@@ -39,13 +39,16 @@ const chiffres = [
       </div>
     </section>
 
-    <section class="chiffres" aria-label="Arpeteria en chiffres">
-      {chiffres.map((chiffre) => (
-        <div class="chiffres__item">
-          <p class="chiffres__valeur">{chiffre.valeur}</p>
-          <p class="chiffres__label">{chiffre.label}</p>
-        </div>
-      ))}
+    <section aria-label="Arpeteria en chiffres">
+      <div class="chiffres">
+        {chiffres.map((chiffre) => (
+          <div class="chiffres__item">
+            <p class="chiffres__valeur">{chiffre.valeur}</p>
+            <p class="chiffres__label">{chiffre.label}</p>
+          </div>
+        ))}
+      </div>
+      <p class="chiffres__lien"><a href="/collection">Voir le détail de la collection →</a></p>
     </section>
 
     <section class="mission">

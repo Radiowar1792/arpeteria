@@ -1,0 +1,174 @@
+---
+import Base from '../layouts/Base.astro';
+import { getOeuvres, getCategories, type Langue, type TypeMedia } from '../lib/directus.ts';
+import { LABELS_LANGUE } from '../lib/langues.ts';
+import { LABELS_TYPE_MEDIA } from '../lib/typesMedia.ts';
+
+const [oeuvres, categoriesArchives, categoriesContemporain] = await Promise.all([
+  getOeuvres(),
+  getCategories('archives'),
+  getCategories('contemporain'),
+]);
+
+function compter<T extends string>(valeurs: (T | null | undefined)[]): Map<T, number> {
+  const compte = new Map<T, number>();
+  for (const valeur of valeurs) {
+    if (!valeur) continue;
+    compte.set(valeur, (compte.get(valeur) ?? 0) + 1);
+  }
+  return compte;
+}
+
+interface Ligne {
+  label: string;
+  valeur: number;
+}
+
+function versLignes(compte: Map<string, number>, labels?: Record<string, string>): Ligne[] {
+  return Array.from(compte.entries())
+    .map(([cle, valeur]) => ({ label: labels?.[cle] ?? cle, valeur }))
+    .sort((a, b) => b.valeur - a.valeur);
+}
+
+const parPeriode: Ligne[] = categoriesArchives
+  .map((c) => ({ label: c.nom, valeur: oeuvres.filter((o) => o.categorie?.slug === c.slug).length }))
+  .filter((l) => l.valeur > 0);
+
+const parDiscipline: Ligne[] = categoriesContemporain
+  .map((c) => ({ label: c.nom, valeur: oeuvres.filter((o) => o.categorie?.slug === c.slug).length }))
+  .filter((l) => l.valeur > 0);
+
+const parLangue = versLignes(compter<Langue>(oeuvres.map((o) => o.langue)), LABELS_LANGUE);
+const parType = versLignes(compter<TypeMedia>(oeuvres.map((o) => o.type_media)), LABELS_TYPE_MEDIA);
+
+const nombreArchives = oeuvres.filter((o) => o.section === 'archives').length;
+const nombreContemporain = oeuvres.filter((o) => o.section === 'contemporain').length;
+const maxSection = Math.max(nombreArchives, nombreContemporain, 1);
+---
+<Base
+  title="La collection en chiffres"
+  description="Répartition du fonds Arpeteria par période, discipline, langue et type de média."
+>
+  <main id="contenu-principal">
+    <p class="kicker">Transparence</p>
+    <h1>La collection en chiffres</h1>
+    <p>
+      {oeuvres.length} œuvre{oeuvres.length > 1 ? 's' : ''} publiée{oeuvres.length > 1 ? 's' : ''}
+      au total, réparties entre les archives historiques et les créations contemporaines.
+    </p>
+
+    <section class="stats-groupe">
+      <h2>Par section</h2>
+      <ul class="liste-stats">
+        <li>
+          <div class="liste-stats__ligne">
+            <span class="liste-stats__label">Archives</span>
+            <span class="liste-stats__valeur">{nombreArchives}</span>
+          </div>
+          <div class="liste-stats__barre">
+            <div class="liste-stats__remplissage" style={`width:${(nombreArchives / maxSection) * 100}%`} />
+          </div>
+        </li>
+        <li>
+          <div class="liste-stats__ligne">
+            <span class="liste-stats__label">Contemporain</span>
+            <span class="liste-stats__valeur">{nombreContemporain}</span>
+          </div>
+          <div class="liste-stats__barre">
+            <div class="liste-stats__remplissage" style={`width:${(nombreContemporain / maxSection) * 100}%`} />
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    {parPeriode.length > 0 && (
+      <section class="stats-groupe">
+        <h2>Par période (archives)</h2>
+        <ul class="liste-stats">
+          {parPeriode.map((ligne) => (
+            <li>
+              <div class="liste-stats__ligne">
+                <span class="liste-stats__label">{ligne.label}</span>
+                <span class="liste-stats__valeur">{ligne.valeur}</span>
+              </div>
+              <div class="liste-stats__barre">
+                <div
+                  class="liste-stats__remplissage"
+                  style={`width:${(ligne.valeur / Math.max(...parPeriode.map((l) => l.valeur))) * 100}%`}
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {parDiscipline.length > 0 && (
+      <section class="stats-groupe">
+        <h2>Par discipline (contemporain)</h2>
+        <ul class="liste-stats">
+          {parDiscipline.map((ligne) => (
+            <li>
+              <div class="liste-stats__ligne">
+                <span class="liste-stats__label">{ligne.label}</span>
+                <span class="liste-stats__valeur">{ligne.valeur}</span>
+              </div>
+              <div class="liste-stats__barre">
+                <div
+                  class="liste-stats__remplissage"
+                  style={`width:${(ligne.valeur / Math.max(...parDiscipline.map((l) => l.valeur))) * 100}%`}
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <div class="stats-deux-colonnes">
+      {parLangue.length > 0 && (
+        <section class="stats-groupe">
+          <h2>Par langue</h2>
+          <ul class="liste-stats">
+            {parLangue.map((ligne) => (
+              <li>
+                <div class="liste-stats__ligne">
+                  <span class="liste-stats__label">{ligne.label}</span>
+                  <span class="liste-stats__valeur">{ligne.valeur}</span>
+                </div>
+                <div class="liste-stats__barre">
+                  <div
+                    class="liste-stats__remplissage"
+                    style={`width:${(ligne.valeur / parLangue[0].valeur) * 100}%`}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {parType.length > 0 && (
+        <section class="stats-groupe">
+          <h2>Par type de média</h2>
+          <ul class="liste-stats">
+            {parType.map((ligne) => (
+              <li>
+                <div class="liste-stats__ligne">
+                  <span class="liste-stats__label">{ligne.label}</span>
+                  <span class="liste-stats__valeur">{ligne.valeur}</span>
+                </div>
+                <div class="liste-stats__barre">
+                  <div
+                    class="liste-stats__remplissage"
+                    style={`width:${(ligne.valeur / parType[0].valeur) * 100}%`}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
+  </main>
+</Base>

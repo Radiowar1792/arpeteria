@@ -621,9 +621,16 @@ main {
   justify-content: center;
   gap: 2.5rem;
   padding: 2rem 0;
-  margin-bottom: 1rem;
   border-top: 1px solid var(--arpeteria-bordure);
   border-bottom: 1px solid var(--arpeteria-bordure);
+}
+
+.chiffres__lien {
+  text-align: center;
+  margin: 0.9rem 0 1.5rem;
+  font-family: var(--police-interface);
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .chiffres__item {
@@ -1485,6 +1492,43 @@ main {
   color: var(--arpeteria-blanc);
 }
 
+/* ── Citation académique ── */
+.citation {
+  margin-top: 3rem;
+  padding: 1.4rem 1.6rem;
+  background: var(--fond-alt);
+  border: 1px solid var(--arpeteria-bordure);
+  border-radius: 0.6rem;
+}
+
+.citation__texte {
+  font-family: var(--police-interface);
+  font-size: 0.9rem;
+  color: var(--texte-attenue);
+  margin: 0 0 1rem;
+  line-height: 1.6;
+}
+
+.citation__bouton {
+  font-family: var(--police-interface);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--arpeteria-bordure);
+  background: var(--surface);
+  color: var(--arpeteria-rouge);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-rapide),
+    border-color var(--transition-rapide);
+}
+
+.citation__bouton:hover {
+  background: var(--remplissage);
+  border-color: var(--arpeteria-rouge-clair);
+}
+
 /* ── Œuvres liées ── */
 .section-liee {
   margin-top: 3.5rem;
@@ -1778,4 +1822,62 @@ main {
     max-width: 12rem;
     box-shadow: none;
   }
+}
+
+/* ── Page "La collection en chiffres" ── */
+.stats-groupe {
+  margin: 2.5rem 0;
+}
+
+.stats-groupe h2 {
+  margin-bottom: 1.1rem;
+}
+
+.stats-deux-colonnes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem 2.5rem;
+}
+
+.liste-stats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.liste-stats__ligne {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 0.35rem;
+  font-family: var(--police-interface);
+  font-size: 0.92rem;
+}
+
+.liste-stats__label {
+  font-weight: 500;
+}
+
+.liste-stats__valeur {
+  font-weight: 700;
+  color: var(--arpeteria-rouge);
+  white-space: nowrap;
+}
+
+.liste-stats__barre {
+  height: 0.5rem;
+  border-radius: 3rem;
+  background: var(--remplissage);
+  overflow: hidden;
+}
+
+.liste-stats__remplissage {
+  height: 100%;
+  background: linear-gradient(90deg, var(--arpeteria-rouge), var(--arpeteria-or));
+  border-radius: 3rem;
+  transition: width var(--transition-douce);
 }

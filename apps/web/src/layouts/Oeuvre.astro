@@ -10,6 +10,7 @@ import { assetUrl, getOeuvres, type Oeuvre } from '../lib/directus.ts';
 import { canonicalUrl } from '../lib/seo.ts';
 import { slugifierMotCle } from '../lib/motscles.ts';
 import { LABELS_LANGUE } from '../lib/langues.ts';
+import { LABELS_TYPE_MEDIA } from '../lib/typesMedia.ts';
 
 interface Props {
   oeuvre: Oeuvre;
@@ -18,12 +19,6 @@ const { oeuvre } = Astro.props;
 const url = canonicalUrl(`/oeuvre/${oeuvre.slug}`);
 const image = oeuvre.couverture ? assetUrl(oeuvre.couverture.id, { width: 800, height: 600 }) : undefined;
 const sectionLabel = oeuvre.section === 'archives' ? 'Archives' : 'Contemporain';
-const LABELS_TYPE: Record<Oeuvre['type_media'], string> = {
-  pdf: 'PDF',
-  video: 'Vidéo',
-  audio: 'Audio',
-  lien: 'Lien',
-};
 
 const oeuvresLiees = (
   await getOeuvres(
@@ -45,6 +40,8 @@ const filAriane = [
     : []),
   { name: oeuvre.titre, url },
 ];
+
+const citation = `${oeuvre.auteur || 'Anonyme'}${oeuvre.date_oeuvre ? ` (${oeuvre.date_oeuvre})` : ''}. « ${oeuvre.titre} ». Arpeteria — bibliothèque numérique de la culture savoyarde (arpitane). ${url}`;
 ---
 <Base title={oeuvre.titre} description={oeuvre.description ?? undefined} image={image}>
   <SchemaOrg oeuvre={oeuvre} url={url} image={image} />
@@ -77,7 +74,7 @@ const filAriane = [
         le fil d'Ariane/la visionneuse/l'attribut lang déjà affichés sur la page. */}
     <div style="display:none" aria-hidden="true">
       <span data-pagefind-filter="Section">{sectionLabel}</span>
-      <span data-pagefind-filter="Type">{LABELS_TYPE[oeuvre.type_media]}</span>
+      <span data-pagefind-filter="Type">{LABELS_TYPE_MEDIA[oeuvre.type_media]}</span>
       {oeuvre.langue && <span data-pagefind-filter="Langue">{LABELS_LANGUE[oeuvre.langue]}</span>}
       {oeuvre.categorie && <span data-pagefind-filter="Catégorie">{oeuvre.categorie.nom}</span>}
     </div>
@@ -108,6 +105,14 @@ const filAriane = [
       </ul>
     )}
 
+    <section class="citation">
+      <p class="kicker">Citer cette œuvre</p>
+      <p class="citation__texte">{citation}</p>
+      <button type="button" class="citation__bouton" id="bouton-citation" data-citation={citation}>
+        Copier la citation
+      </button>
+    </section>
+
     {oeuvresLiees.length > 0 && (
       <section class="section-liee">
         <h2>À découvrir aussi</h2>
@@ -122,3 +127,27 @@ const filAriane = [
     )}
   </main>
 </Base>
+
+<script>
+  function initCitation() {
+    const bouton = document.getElementById('bouton-citation');
+    if (!bouton || bouton.dataset.pret) return;
+    bouton.dataset.pret = 'true';
+
+    bouton.addEventListener('click', async () => {
+      const texte = bouton.dataset.citation ?? '';
+      try {
+        await navigator.clipboard.writeText(texte);
+        const original = bouton.textContent;
+        bouton.textContent = 'Copié !';
+        setTimeout(() => {
+          bouton.textContent = original;
+        }, 1800);
+      } catch (e) {
+        // silencieux : au pire l'utilisateur copie le texte à la main
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', initCitation);
+</script>
