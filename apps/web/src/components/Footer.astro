@@ -1,18 +1,29 @@
 ---
-import { getOeuvres } from '../lib/directus.ts';
+import { getOeuvres, getArticles, getPersonnages, getLieux } from '../lib/directus.ts';
 
 const annee = new Date().getFullYear();
 const liens = [
   { href: '/archives', label: 'Archives' },
   { href: '/contemporain', label: 'Contemporain' },
+  { href: '/actualites', label: 'Actualités' },
   { href: '/recommandations', label: 'Recommandations' },
   { href: '/collection', label: 'La collection en chiffres' },
   { href: '/a-propos', label: 'À propos' },
   { href: '/rss.xml', label: 'Flux RSS' },
 ];
 
-const oeuvres = await getOeuvres();
-const slugsAlea = oeuvres.map((o) => o.slug);
+const [oeuvres, articles, personnages, lieux] = await Promise.all([
+  getOeuvres(),
+  getArticles(),
+  getPersonnages(),
+  getLieux(),
+]);
+const cheminsAlea = [
+  ...oeuvres.map((o) => `/oeuvre/${o.slug}`),
+  ...articles.map((a) => `/actualites/${a.slug}`),
+  ...personnages.map((p) => `/personnages/${p.slug}`),
+  ...lieux.map((l) => `/lieux/${l.slug}`),
+];
 ---
 <footer class="site-footer">
   <div class="site-footer__inner">
@@ -22,14 +33,14 @@ const slugsAlea = oeuvres.map((o) => o.slug);
     </p>
     <nav class="site-footer__nav" aria-label="Navigation du pied de page">
       {liens.map((lien) => <a href={lien.href}>{lien.label}</a>)}
-      {slugsAlea.length > 0 && (
-        <a href="#" id="lien-oeuvre-alea">Œuvre au hasard</a>
+      {cheminsAlea.length > 0 && (
+        <a href="#" id="lien-oeuvre-alea">Découverte au hasard</a>
       )}
     </nav>
     <p class="site-footer__copyright">© {annee} Arpeteria</p>
   </div>
-  {slugsAlea.length > 0 && (
-    <script type="application/json" id="donnees-oeuvre-alea" is:inline set:html={JSON.stringify(slugsAlea)} />
+  {cheminsAlea.length > 0 && (
+    <script type="application/json" id="donnees-oeuvre-alea" is:inline set:html={JSON.stringify(cheminsAlea)} />
   )}
 </footer>
 
@@ -43,10 +54,10 @@ const slugsAlea = oeuvres.map((o) => o.slug);
     lien.addEventListener('click', (evenement) => {
       evenement.preventDefault();
       try {
-        const slugs: string[] = JSON.parse(donnees.textContent || '[]');
-        if (slugs.length === 0) return;
-        const choix = slugs[Math.floor(Math.random() * slugs.length)];
-        window.location.href = `/oeuvre/${choix}`;
+        const chemins: string[] = JSON.parse(donnees.textContent || '[]');
+        if (chemins.length === 0) return;
+        const choix = chemins[Math.floor(Math.random() * chemins.length)];
+        window.location.href = choix;
       } catch (e) {
         // silencieux : au pire le lien ne fait rien
       }

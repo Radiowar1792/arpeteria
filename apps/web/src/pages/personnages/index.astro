@@ -1,0 +1,53 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getPersonnages, assetUrl } from '../../lib/directus.ts';
+
+const personnages = await getPersonnages();
+---
+<Base
+  title="Personnages"
+  description="Figures savoyardes et arpitanes — autrices, auteurs et personnalités liées à la culture de la Savoie."
+>
+  <main id="contenu-principal">
+    <p class="kicker">Figures savoyardes</p>
+    <h1>Personnages</h1>
+    <p>Autrices, auteurs et personnalités, historiques ou contemporaines, liées à la culture savoyarde et arpitane.</p>
+
+    {personnages.length > 0 ? (
+      <ul class="grille-oeuvres">
+        {personnages.map((personnage) => (
+          <li>
+            <a class="carte-oeuvre" href={`/personnages/${personnage.slug}`}>
+              <div class="carte-oeuvre__media">
+                {personnage.portrait ? (
+                  <img
+                    class="carte-oeuvre__image"
+                    src={assetUrl(personnage.portrait, { width: 480, height: 360 })}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    width="400"
+                    height="300"
+                  />
+                ) : (
+                  <div class="carte-oeuvre__media-secours">
+                    <img src="/logo/logo-256.png" alt="" width="48" height="48" loading="lazy" />
+                  </div>
+                )}
+              </div>
+              <div class="carte-oeuvre__contenu">
+                <h3>{personnage.nom}</h3>
+                <div class="carte-oeuvre__meta">
+                  {personnage.profession && <p class="carte-oeuvre__auteur">{personnage.profession}</p>}
+                  {personnage.periode && <p class="carte-oeuvre__date">{personnage.periode}</p>}
+                </div>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>Aucun personnage publié pour le moment.</p>
+    )}
+  </main>
+</Base>

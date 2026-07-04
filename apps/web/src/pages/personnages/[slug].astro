@@ -1,0 +1,77 @@
+---
+import Base from '../../layouts/Base.astro';
+import BreadcrumbSchema from '../../components/BreadcrumbSchema.astro';
+import { getPersonnages, assetUrl, type Personnage } from '../../lib/directus.ts';
+import { canonicalUrl } from '../../lib/seo.ts';
+import { slugifierMotCle } from '../../lib/motscles.ts';
+
+export async function getStaticPaths() {
+  const personnages = await getPersonnages();
+  return personnages.map((personnage) => ({ params: { slug: personnage.slug }, props: { personnage } }));
+}
+
+interface Props {
+  personnage: Personnage;
+}
+const { personnage } = Astro.props;
+const url = canonicalUrl(`/personnages/${personnage.slug}`);
+const image = personnage.portrait ? assetUrl(personnage.portrait, { width: 800, height: 600 }) : undefined;
+
+const filAriane = [
+  { name: 'Accueil', url: canonicalUrl('/') },
+  { name: 'Personnages', url: canonicalUrl('/personnages') },
+  { name: personnage.nom, url },
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: personnage.nom,
+  url,
+  ...(personnage.profession ? { jobTitle: personnage.profession } : {}),
+  ...(personnage.biographie ? { description: personnage.biographie.replace(/<[^>]+>/g, '') } : {}),
+  ...(image ? { image } : {}),
+};
+
+const description = personnage.biographie
+  ? personnage.biographie.replace(/<[^>]+>/g, '').slice(0, 160)
+  : undefined;
+---
+<Base title={personnage.nom} description={description} image={image}>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  <BreadcrumbSchema items={filAriane} />
+  <main id="contenu-principal" class="fiche-oeuvre">
+    <nav class="fil-ariane" aria-label="Fil d'Ariane">
+      <a href="/">Accueil</a> › <a href="/personnages">Personnages</a>
+    </nav>
+
+    {image && (
+      <img
+        class="fiche-oeuvre__couverture"
+        src={image}
+        alt=""
+        width="800"
+        height="600"
+        decoding="async"
+      />
+    )}
+
+    <h1>{personnage.nom}</h1>
+    {personnage.profession && <p class="fiche-oeuvre__auteur">{personnage.profession}</p>}
+    {personnage.periode && <p class="fiche-oeuvre__date">{personnage.periode}</p>}
+
+    {personnage.biographie && (
+      <div class="fiche-oeuvre__description" set:html={personnage.biographie} />
+    )}
+
+    {personnage.mots_cles && personnage.mots_cles.length > 0 && (
+      <ul class="mots-cles">
+        {personnage.mots_cles.map((mot) => (
+          <li>
+            <a href={`/mot-cle/${slugifierMotCle(mot)}`}>{mot}</a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </main>
+</Base>

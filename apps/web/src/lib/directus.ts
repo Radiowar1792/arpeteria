@@ -43,6 +43,44 @@ export interface Recommandation {
   ordre: number;
 }
 
+export interface Article {
+  id: string;
+  statut: 'brouillon' | 'publié';
+  titre: string;
+  slug: string;
+  chapo: string | null;
+  contenu: string;
+  image: string | null;
+  date_publication: string;
+  mots_cles: string[] | null;
+}
+
+export interface Personnage {
+  id: string;
+  statut: 'brouillon' | 'publié';
+  nom: string;
+  slug: string;
+  periode: string | null;
+  profession: string | null;
+  portrait: string | null;
+  biographie: string | null;
+  date_publication: string;
+  mots_cles: string[] | null;
+}
+
+export interface Lieu {
+  id: string;
+  statut: 'brouillon' | 'publié';
+  nom: string;
+  slug: string;
+  commune: string | null;
+  periode: string | null;
+  description: string | null;
+  photo: string | null;
+  date_publication: string;
+  mots_cles: string[] | null;
+}
+
 // URL interne utilisée pour interroger l'API au moment du build (réseau Docker en prod).
 const DIRECTUS_URL = import.meta.env.DIRECTUS_URL ?? 'http://127.0.0.1:8055';
 // URL publique utilisée dans le HTML généré (images, liens) — doit être joignable par les visiteurs.
@@ -115,6 +153,41 @@ export async function getCategorieBySlug(slug: string): Promise<Categorie | null
 
 export async function getRecommandations(): Promise<Recommandation[]> {
   return (await directusFetch<Recommandation[]>('/items/recommandations?sort=ordre')) ?? [];
+}
+
+export async function getArticles(): Promise<Article[]> {
+  return (
+    (await directusFetch<Article[]>('/items/articles?filter[statut][_eq]=publié&sort=-date_publication')) ?? []
+  );
+}
+
+export async function getArticleBySlug(slug: string): Promise<Article | null> {
+  const results = await directusFetch<Article[]>(
+    `/items/articles?filter[slug][_eq]=${encodeURIComponent(slug)}&filter[statut][_eq]=publié&limit=1`
+  );
+  return results?.[0] ?? null;
+}
+
+export async function getPersonnages(): Promise<Personnage[]> {
+  return (await directusFetch<Personnage[]>('/items/personnages?filter[statut][_eq]=publié&sort=nom')) ?? [];
+}
+
+export async function getPersonnageBySlug(slug: string): Promise<Personnage | null> {
+  const results = await directusFetch<Personnage[]>(
+    `/items/personnages?filter[slug][_eq]=${encodeURIComponent(slug)}&filter[statut][_eq]=publié&limit=1`
+  );
+  return results?.[0] ?? null;
+}
+
+export async function getLieux(): Promise<Lieu[]> {
+  return (await directusFetch<Lieu[]>('/items/lieux?filter[statut][_eq]=publié&sort=nom')) ?? [];
+}
+
+export async function getLieuBySlug(slug: string): Promise<Lieu | null> {
+  const results = await directusFetch<Lieu[]>(
+    `/items/lieux?filter[slug][_eq]=${encodeURIComponent(slug)}&filter[statut][_eq]=publié&limit=1`
+  );
+  return results?.[0] ?? null;
 }
 
 interface OptionsTransformation {

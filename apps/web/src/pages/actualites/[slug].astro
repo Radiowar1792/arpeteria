@@ -1,0 +1,71 @@
+---
+import Base from '../../layouts/Base.astro';
+import BreadcrumbSchema from '../../components/BreadcrumbSchema.astro';
+import { getArticles, assetUrl, type Article } from '../../lib/directus.ts';
+import { canonicalUrl } from '../../lib/seo.ts';
+import { slugifierMotCle } from '../../lib/motscles.ts';
+
+export async function getStaticPaths() {
+  const articles = await getArticles();
+  return articles.map((article) => ({ params: { slug: article.slug }, props: { article } }));
+}
+
+interface Props {
+  article: Article;
+}
+const { article } = Astro.props;
+const url = canonicalUrl(`/actualites/${article.slug}`);
+const image = article.image ? assetUrl(article.image, { width: 1200, height: 700 }) : undefined;
+
+const filAriane = [
+  { name: 'Accueil', url: canonicalUrl('/') },
+  { name: 'Actualités', url: canonicalUrl('/actualites') },
+  { name: article.titre, url },
+];
+
+const dateAffichee = new Date(article.date_publication).toLocaleDateString('fr-FR', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: article.titre,
+  url,
+  datePublished: article.date_publication,
+  ...(article.chapo ? { description: article.chapo } : {}),
+  ...(image ? { image } : {}),
+};
+---
+<Base title={article.titre} description={article.chapo ?? undefined} image={image}>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  <BreadcrumbSchema items={filAriane} />
+  <main id="contenu-principal" class="fiche-oeuvre">
+    {image && (
+      <div class="page-bandeau">
+        <img src={image} alt="" width="1200" height="700" loading="eager" decoding="async" />
+      </div>
+    )}
+
+    <nav class="fil-ariane" aria-label="Fil d'Ariane">
+      <a href="/">Accueil</a> › <a href="/actualites">Actualités</a>
+    </nav>
+
+    <h1>{article.titre}</h1>
+    <p class="fiche-oeuvre__date">{dateAffichee}</p>
+
+    <div class="fiche-oeuvre__description" set:html={article.contenu} />
+
+    {article.mots_cles && article.mots_cles.length > 0 && (
+      <ul class="mots-cles">
+        {article.mots_cles.map((mot) => (
+          <li>
+            <a href={`/mot-cle/${slugifierMotCle(mot)}`}>{mot}</a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </main>
+</Base>

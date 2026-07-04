@@ -1,0 +1,50 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getArticles, assetUrl } from '../../lib/directus.ts';
+
+const articles = await getArticles();
+---
+<Base
+  title="Actualités"
+  description="Annonces, contexte historique et carnets de recherche du conservateur d'Arpeteria."
+>
+  <main id="contenu-principal">
+    <p class="kicker">Le carnet du conservateur</p>
+    <h1>Actualités</h1>
+    <p>Annonces, contexte historique et notes de recherche autour du fonds Arpeteria.</p>
+
+    {articles.length > 0 ? (
+      <ul class="grille-oeuvres">
+        {articles.map((article) => (
+          <li>
+            <a class="carte-oeuvre" href={`/actualites/${article.slug}`}>
+              <div class="carte-oeuvre__media">
+                {article.image ? (
+                  <img
+                    class="carte-oeuvre__image"
+                    src={assetUrl(article.image, { width: 480, height: 360 })}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    width="400"
+                    height="300"
+                  />
+                ) : (
+                  <div class="carte-oeuvre__media-secours">
+                    <img src="/logo/logo-256.png" alt="" width="48" height="48" loading="lazy" />
+                  </div>
+                )}
+              </div>
+              <div class="carte-oeuvre__contenu">
+                <h3>{article.titre}</h3>
+                {article.chapo && <p class="carte-oeuvre__extrait">{article.chapo}</p>}
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>Aucun article publié pour le moment.</p>
+    )}
+  </main>
+</Base>

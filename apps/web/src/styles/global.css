@@ -751,6 +751,14 @@ main {
   border-top-color: var(--texte);
 }
 
+.section-carte--or {
+  border-top-color: var(--arpeteria-or);
+}
+
+.section-carte--or .section-carte__lien {
+  color: var(--arpeteria-or);
+}
+
 .section-carte:hover {
   transform: translateY(-4px);
   box-shadow: var(--ombre-forte);
@@ -1058,6 +1066,16 @@ main {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.carte-oeuvre__extrait {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0.3rem 0 0;
+  font-size: 0.85rem;
+  color: var(--texte-attenue);
 }
 
 /* ── Fiche œuvre ── */
@@ -1738,15 +1756,15 @@ main {
   border-radius: 3rem;
 }
 
-/* ── Bandeau discret (page de sous-catégorie) ── */
-.categorie-bandeau {
+/* ── Bandeau discret (page de sous-catégorie, article, personnage, lieu) ── */
+.page-bandeau {
   position: relative;
   height: 15rem;
   margin: -2rem -1.5rem 2rem;
   overflow: hidden;
 }
 
-.categorie-bandeau img {
+.page-bandeau img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -1769,7 +1787,7 @@ main {
 }
 
 @media (max-width: 40rem) {
-  .categorie-bandeau {
+  .page-bandeau {
     height: 10rem;
   }
 }
@@ -1792,7 +1810,7 @@ main {
   .sections-cles,
   .teaser-recommandations,
   .theme-bascule,
-  .categorie-bandeau {
+  .page-bandeau {
     display: none !important;
   }
 

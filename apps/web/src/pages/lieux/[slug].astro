@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import BreadcrumbSchema from '../../components/BreadcrumbSchema.astro';
+import { getLieux, assetUrl, type Lieu } from '../../lib/directus.ts';
+import { canonicalUrl } from '../../lib/seo.ts';
+import { slugifierMotCle } from '../../lib/motscles.ts';
+
+export async function getStaticPaths() {
+  const lieux = await getLieux();
+  return lieux.map((lieu) => ({ params: { slug: lieu.slug }, props: { lieu } }));
+}
+
+interface Props {
+  lieu: Lieu;
+}
+const { lieu } = Astro.props;
+const url = canonicalUrl(`/lieux/${lieu.slug}`);
+const image = lieu.photo ? assetUrl(lieu.photo, { width: 1200, height: 700 }) : undefined;
+
+const filAriane = [
+  { name: 'Accueil', url: canonicalUrl('/') },
+  { name: 'Lieux patrimoniaux', url: canonicalUrl('/lieux') },
+  { name: lieu.nom, url },
+];
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'LandmarkOrHistoricalBuilding',
+  name: lieu.nom,
+  url,
+  ...(lieu.commune ? { address: { '@type': 'PostalAddress', addressLocality: lieu.commune } } : {}),
+  ...(lieu.description ? { description: lieu.description.replace(/<[^>]+>/g, '') } : {}),
+  ...(image ? { image } : {}),
+};
+
+const description = lieu.description ? lieu.description.replace(/<[^>]+>/g, '').slice(0, 160) : undefined;
+---
+<Base title={lieu.nom} description={description} image={image}>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  <BreadcrumbSchema items={filAriane} />
+  <main id="contenu-principal" class="fiche-oeuvre">
+    {image && (
+      <div class="page-bandeau">
+        <img src={image} alt="" width="1200" height="700" loading="eager" decoding="async" />
+      </div>
+    )}
+
+    <nav class="fil-ariane" aria-label="Fil d'Ariane">
+      <a href="/">Accueil</a> › <a href="/lieux">Lieux patrimoniaux</a>
+    </nav>
+
+    <h1>{lieu.nom}</h1>
+    {lieu.commune && <p class="fiche-oeuvre__auteur">{lieu.commune}</p>}
+    {lieu.periode && <p class="fiche-oeuvre__date">{lieu.periode}</p>}
+
+    {lieu.description && <div class="fiche-oeuvre__description" set:html={lieu.description} />}
+
+    {lieu.mots_cles && lieu.mots_cles.length > 0 && (
+      <ul class="mots-cles">
+        {lieu.mots_cles.map((mot) => (
+          <li>
+            <a href={`/mot-cle/${slugifierMotCle(mot)}`}>{mot}</a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </main>
+</Base>

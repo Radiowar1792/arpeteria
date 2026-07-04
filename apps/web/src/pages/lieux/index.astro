@@ -1,0 +1,53 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getLieux, assetUrl } from '../../lib/directus.ts';
+
+const lieux = await getLieux();
+---
+<Base
+  title="Lieux patrimoniaux"
+  description="Châteaux, villages et monuments de Savoie — troisième porte d'entrée dans le fonds Arpeteria, aux côtés du temps et de la discipline."
+>
+  <main id="contenu-principal">
+    <p class="kicker">Explorer par lieu</p>
+    <h1>Lieux patrimoniaux</h1>
+    <p>Châteaux, villages et monuments qui font l'histoire et la culture de la Savoie.</p>
+
+    {lieux.length > 0 ? (
+      <ul class="grille-oeuvres">
+        {lieux.map((lieu) => (
+          <li>
+            <a class="carte-oeuvre" href={`/lieux/${lieu.slug}`}>
+              <div class="carte-oeuvre__media">
+                {lieu.photo ? (
+                  <img
+                    class="carte-oeuvre__image"
+                    src={assetUrl(lieu.photo, { width: 480, height: 360 })}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    width="400"
+                    height="300"
+                  />
+                ) : (
+                  <div class="carte-oeuvre__media-secours">
+                    <img src="/logo/logo-256.png" alt="" width="48" height="48" loading="lazy" />
+                  </div>
+                )}
+              </div>
+              <div class="carte-oeuvre__contenu">
+                <h3>{lieu.nom}</h3>
+                <div class="carte-oeuvre__meta">
+                  {lieu.commune && <p class="carte-oeuvre__auteur">{lieu.commune}</p>}
+                  {lieu.periode && <p class="carte-oeuvre__date">{lieu.periode}</p>}
+                </div>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>Aucun lieu publié pour le moment.</p>
+    )}
+  </main>
+</Base>

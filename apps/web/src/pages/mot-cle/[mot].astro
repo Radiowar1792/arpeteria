@@ -2,16 +2,21 @@
 import Base from '../../layouts/Base.astro';
 import CarteOeuvre from '../../components/CarteOeuvre.astro';
 import BreadcrumbSchema from '../../components/BreadcrumbSchema.astro';
-import { getOeuvres } from '../../lib/directus.ts';
+import { getOeuvres, getArticles, getPersonnages, getLieux, assetUrl } from '../../lib/directus.ts';
 import { slugifierMotCle } from '../../lib/motscles.ts';
 import { canonicalUrl } from '../../lib/seo.ts';
 
 export async function getStaticPaths() {
-  const oeuvres = await getOeuvres();
+  const [oeuvres, articles, personnages, lieux] = await Promise.all([
+    getOeuvres(),
+    getArticles(),
+    getPersonnages(),
+    getLieux(),
+  ]);
   const parSlug = new Map<string, string>();
 
-  for (const oeuvre of oeuvres) {
-    for (const mot of oeuvre.mots_cles ?? []) {
+  for (const item of [...oeuvres, ...articles, ...personnages, ...lieux]) {
+    for (const mot of item.mots_cles ?? []) {
       const slug = slugifierMotCle(mot);
       if (slug && !parSlug.has(slug)) parSlug.set(slug, mot);
     }
@@ -29,8 +34,20 @@ interface Props {
 const { label } = Astro.props;
 const { mot } = Astro.params;
 
-const toutes = await getOeuvres();
-const oeuvres = toutes.filter((o) => (o.mots_cles ?? []).some((m) => slugifierMotCle(m) === mot));
+const correspond = (motsCles: string[] | null) => (motsCles ?? []).some((m) => slugifierMotCle(m) === mot);
+
+const [toutesOeuvres, tousArticles, tousPersonnages, tousLieux] = await Promise.all([
+  getOeuvres(),
+  getArticles(),
+  getPersonnages(),
+  getLieux(),
+]);
+const oeuvres = toutesOeuvres.filter((o) => correspond(o.mots_cles));
+const articles = tousArticles.filter((a) => correspond(a.mots_cles));
+const personnages = tousPersonnages.filter((p) => correspond(p.mots_cles));
+const lieux = tousLieux.filter((l) => correspond(l.mots_cles));
+
+const totalResultats = oeuvres.length + articles.length + personnages.length + lieux.length;
 
 const filAriane = [
   { name: 'Accueil', url: canonicalUrl('/') },
@@ -39,7 +56,7 @@ const filAriane = [
 ---
 <Base
   title={`Mot-clé : ${label}`}
-  description={`Œuvres liées au mot-clé "${label}" sur Arpeteria.`}
+  description={`Œuvres, articles, personnages et lieux liés au mot-clé "${label}" sur Arpeteria.`}
 >
   <BreadcrumbSchema items={filAriane} />
   <main id="contenu-principal">
@@ -49,16 +66,124 @@ const filAriane = [
     <p class="kicker">Mot-clé</p>
     <h1>{label}</h1>
 
-    {oeuvres.length > 0 ? (
-      <ul class="grille-oeuvres">
-        {oeuvres.map((oeuvre) => (
-          <li>
-            <CarteOeuvre oeuvre={oeuvre} />
-          </li>
-        ))}
-      </ul>
-    ) : (
-      <p>Aucune œuvre pour ce mot-clé.</p>
+    {totalResultats === 0 && <p>Aucun contenu pour ce mot-clé.</p>}
+
+    {oeuvres.length > 0 && (
+      <section class="stats-groupe">
+        <h2>Œuvres</h2>
+        <ul class="grille-oeuvres">
+          {oeuvres.map((oeuvre) => (
+            <li>
+              <CarteOeuvre oeuvre={oeuvre} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {articles.length > 0 && (
+      <section class="stats-groupe">
+        <h2>Actualités</h2>
+        <ul class="grille-oeuvres">
+          {articles.map((article) => (
+            <li>
+              <a class="carte-oeuvre" href={`/actualites/${article.slug}`}>
+                <div class="carte-oeuvre__media">
+                  {article.image ? (
+                    <img
+                      class="carte-oeuvre__image"
+                      src={assetUrl(article.image, { width: 480, height: 360 })}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      width="400"
+                      height="300"
+                    />
+                  ) : (
+                    <div class="carte-oeuvre__media-secours">
+                      <img src="/logo/logo-256.png" alt="" width="48" height="48" loading="lazy" />
+                    </div>
+                  )}
+                </div>
+                <div class="carte-oeuvre__contenu">
+                  <h3>{article.titre}</h3>
+                  {article.chapo && <p class="carte-oeuvre__extrait">{article.chapo}</p>}
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {personnages.length > 0 && (
+      <section class="stats-groupe">
+        <h2>Personnages</h2>
+        <ul class="grille-oeuvres">
+          {personnages.map((personnage) => (
+            <li>
+              <a class="carte-oeuvre" href={`/personnages/${personnage.slug}`}>
+                <div class="carte-oeuvre__media">
+                  {personnage.portrait ? (
+                    <img
+                      class="carte-oeuvre__image"
+                      src={assetUrl(personnage.portrait, { width: 480, height: 360 })}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      width="400"
+                      height="300"
+                    />
+                  ) : (
+                    <div class="carte-oeuvre__media-secours">
+                      <img src="/logo/logo-256.png" alt="" width="48" height="48" loading="lazy" />
+                    </div>
+                  )}
+                </div>
+                <div class="carte-oeuvre__contenu">
+                  <h3>{personnage.nom}</h3>
+                  {personnage.profession && <p class="carte-oeuvre__auteur">{personnage.profession}</p>}
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {lieux.length > 0 && (
+      <section class="stats-groupe">
+        <h2>Lieux</h2>
+        <ul class="grille-oeuvres">
+          {lieux.map((lieu) => (
+            <li>
+              <a class="carte-oeuvre" href={`/lieux/${lieu.slug}`}>
+                <div class="carte-oeuvre__media">
+                  {lieu.photo ? (
+                    <img
+                      class="carte-oeuvre__image"
+                      src={assetUrl(lieu.photo, { width: 480, height: 360 })}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      width="400"
+                      height="300"
+                    />
+                  ) : (
+                    <div class="carte-oeuvre__media-secours">
+                      <img src="/logo/logo-256.png" alt="" width="48" height="48" loading="lazy" />
+                    </div>
+                  )}
+                </div>
+                <div class="carte-oeuvre__contenu">
+                  <h3>{lieu.nom}</h3>
+                  {lieu.commune && <p class="carte-oeuvre__auteur">{lieu.commune}</p>}
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
     )}
   </main>
 </Base>

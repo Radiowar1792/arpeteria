@@ -40,6 +40,51 @@ const PRIMARY_KEY_FIELD: FieldDef = {
   schema: { is_primary_key: true, has_auto_increment: false },
 };
 
+// Champs partagés par les nouvelles collections éditoriales (articles/personnages/lieux),
+// sur le même modèle que oeuvres/categories.
+const STATUT_FIELD: FieldDef = {
+  field: 'statut',
+  type: 'string',
+  meta: {
+    interface: 'select-dropdown',
+    required: true,
+    options: {
+      choices: [
+        { text: 'Brouillon', value: 'brouillon' },
+        { text: 'Publié', value: 'publié' },
+      ],
+    },
+  },
+  schema: { default_value: 'brouillon' },
+};
+
+function SLUG_FIELD(exemple: string): FieldDef {
+  return {
+    field: 'slug',
+    type: 'string',
+    meta: {
+      interface: 'input',
+      required: true,
+      options: { slug: true, trim: true },
+      validation: { slug: { _regex: '^[a-z0-9]+(-[a-z0-9]+)*$' } },
+      validation_message: `Lettres minuscules, chiffres et tirets uniquement (ex. ${exemple}).`,
+    },
+    schema: { is_unique: true },
+  };
+}
+
+const DATE_PUBLICATION_FIELD: FieldDef = {
+  field: 'date_publication',
+  type: 'timestamp',
+  meta: { interface: 'datetime', readonly: true, hidden: true, special: ['date-created'] },
+};
+
+const MOTS_CLES_FIELD: FieldDef = {
+  field: 'mots_cles',
+  type: 'json',
+  meta: { interface: 'tags', special: ['cast-json'] },
+};
+
 const collections: CollectionDef[] = [
   {
     collection: 'categories',
@@ -214,6 +259,72 @@ const collections: CollectionDef[] = [
       },
     ],
   },
+  {
+    // Billets éditoriaux du conservateur (annonces, contexte historique, carnets de
+    // recherche) — distinct d'une "œuvre" cataloguée : pas de fichier/média associé, juste
+    // du texte long, à la manière d'un blog/actualités.
+    collection: 'articles',
+    icon: 'article',
+    fields: [
+      STATUT_FIELD,
+      { field: 'titre', type: 'string', meta: { interface: 'input', required: true } },
+      SLUG_FIELD('savoyard-ou-savoisien'),
+      {
+        field: 'chapo',
+        type: 'text',
+        meta: {
+          interface: 'input-multiline',
+          note: "Court résumé affiché dans les listes, avant le contenu complet de l'article.",
+        },
+      },
+      { field: 'contenu', type: 'text', meta: { interface: 'input-rich-text-html', required: true } },
+      { field: 'image', type: 'uuid', meta: { interface: 'file-image', special: ['file'] } },
+      DATE_PUBLICATION_FIELD,
+      MOTS_CLES_FIELD,
+    ],
+  },
+  {
+    // Fiches biographiques de figures savoyardes (autrices/auteurs, personnalités
+    // historiques ou contemporaines liées à la culture arpitane).
+    collection: 'personnages',
+    icon: 'person',
+    fields: [
+      STATUT_FIELD,
+      { field: 'nom', type: 'string', meta: { interface: 'input', required: true } },
+      SLUG_FIELD('bernard-de-menthon'),
+      {
+        field: 'periode',
+        type: 'string',
+        meta: { interface: 'input', options: { placeholder: 'ex : 1675-1730, ou XIXe siècle' } },
+      },
+      { field: 'profession', type: 'string', meta: { interface: 'input', options: { placeholder: 'ex : Écrivain, Duc de Savoie…' } } },
+      { field: 'portrait', type: 'uuid', meta: { interface: 'file-image', special: ['file'] } },
+      { field: 'biographie', type: 'text', meta: { interface: 'input-rich-text-html' } },
+      DATE_PUBLICATION_FIELD,
+      MOTS_CLES_FIELD,
+    ],
+  },
+  {
+    // Lieux patrimoniaux (châteaux, villages, monuments) — troisième porte d'entrée dans
+    // le fonds, aux côtés du temps (Archives) et de la discipline (Contemporain).
+    collection: 'lieux',
+    icon: 'castle',
+    fields: [
+      STATUT_FIELD,
+      { field: 'nom', type: 'string', meta: { interface: 'input', required: true } },
+      SLUG_FIELD('chateau-de-chambery'),
+      { field: 'commune', type: 'string', meta: { interface: 'input', options: { placeholder: 'ex : Chambéry' } } },
+      {
+        field: 'periode',
+        type: 'string',
+        meta: { interface: 'input', options: { placeholder: 'ex : Moyen Âge, XIXe siècle…' } },
+      },
+      { field: 'description', type: 'text', meta: { interface: 'input-rich-text-html' } },
+      { field: 'photo', type: 'uuid', meta: { interface: 'file-image', special: ['file'] } },
+      DATE_PUBLICATION_FIELD,
+      MOTS_CLES_FIELD,
+    ],
+  },
 ];
 
 const relations: RelationDef[] = [
@@ -221,6 +332,9 @@ const relations: RelationDef[] = [
   { collection: 'oeuvres', field: 'fichier_pdf', related_collection: 'directus_files' },
   { collection: 'oeuvres', field: 'couverture', related_collection: 'directus_files' },
   { collection: 'categories', field: 'image', related_collection: 'directus_files' },
+  { collection: 'articles', field: 'image', related_collection: 'directus_files' },
+  { collection: 'personnages', field: 'portrait', related_collection: 'directus_files' },
+  { collection: 'lieux', field: 'photo', related_collection: 'directus_files' },
 ];
 
 async function ensureCollection(def: CollectionDef) {
