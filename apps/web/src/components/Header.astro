@@ -107,6 +107,15 @@ const liens = [
           bascule.setAttribute('aria-expanded', 'false');
         }
       });
+
+      // Le header persiste entre les pages (transition:persist) : sans ça, le menu
+      // resterait visuellement ouvert sur la page suivante après un clic sur un lien.
+      nav.addEventListener('click', (evenement) => {
+        if ((evenement.target as HTMLElement).closest('a')) {
+          nav.classList.remove('site-header__nav--ouvert');
+          bascule.setAttribute('aria-expanded', 'false');
+        }
+      });
     }
 
     const basculeTheme = document.getElementById('bascule-theme');

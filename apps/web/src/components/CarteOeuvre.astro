@@ -14,6 +14,7 @@ const { oeuvre } = Astro.props;
         src={assetUrl(oeuvre.couverture.id, { width: 480, height: 360 })}
         alt=""
         loading="lazy"
+        decoding="async"
         width="400"
         height="300"
         transition:name={`couverture-${oeuvre.id}`}

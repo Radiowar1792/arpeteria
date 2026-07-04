@@ -188,6 +188,17 @@ main {
   }
 }
 
+/* ── Transition de page (Astro ClientRouter) : durée/accélération du site plutôt que
+   le fondu par défaut du navigateur. Le header/footer sont transition:persist, donc
+   seule la zone <main> (racine restante) fait ce fondu entre deux pages. ── */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 280ms;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
 /* ── Header ── */
 .site-header {
   position: sticky;
