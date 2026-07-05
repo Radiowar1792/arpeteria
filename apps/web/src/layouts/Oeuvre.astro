@@ -41,7 +41,8 @@ const filAriane = [
   { name: oeuvre.titre, url },
 ];
 
-const citation = `${oeuvre.auteur || 'Anonyme'}${oeuvre.date_oeuvre ? ` (${oeuvre.date_oeuvre})` : ''}. « ${oeuvre.titre} ». Arpeteria — bibliothèque numérique de la culture savoyarde (arpitane). ${url}`;
+const referenceCitation = `${oeuvre.auteur || 'Anonyme'}${oeuvre.date_oeuvre ? ` (${oeuvre.date_oeuvre})` : ''}. « ${oeuvre.titre} ». Arpeteria — bibliothèque numérique de la culture savoyarde (arpitane).`;
+const citation = `${referenceCitation} Disponible sur : ${url}`;
 ---
 <Base title={oeuvre.titre} description={oeuvre.description ?? undefined} image={image}>
   <SchemaOrg oeuvre={oeuvre} url={url} image={image} />
@@ -122,10 +123,18 @@ const citation = `${oeuvre.auteur || 'Anonyme'}${oeuvre.date_oeuvre ? ` (${oeuvr
 
     <section class="citation">
       <p class="kicker">Citer cette œuvre</p>
-      <p class="citation__texte">{citation}</p>
-      <button type="button" class="citation__bouton" id="bouton-citation" data-citation={citation}>
-        Copier la citation
-      </button>
+      <blockquote class="citation__bloc">
+        <p>{referenceCitation}</p>
+        <p class="citation__url">
+          Disponible sur : <a href={url}>{url}</a>
+        </p>
+      </blockquote>
+      <div class="citation__actions">
+        <button type="button" class="citation__bouton" id="bouton-citation" data-citation={citation}>
+          Copier la citation
+        </button>
+        <span class="citation__note">La citation copiée inclut la date de consultation du jour.</span>
+      </div>
     </section>
 
     {oeuvresLiees.length > 0 && (
@@ -150,7 +159,12 @@ const citation = `${oeuvre.auteur || 'Anonyme'}${oeuvre.date_oeuvre ? ` (${oeuvr
     bouton.dataset.pret = 'true';
 
     bouton.addEventListener('click', async () => {
-      const texte = bouton.dataset.citation ?? '';
+      const dateConsultation = new Date().toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
+      const texte = `${bouton.dataset.citation ?? ''} Consulté le ${dateConsultation}.`;
       try {
         await navigator.clipboard.writeText(texte);
         const original = bouton.textContent;

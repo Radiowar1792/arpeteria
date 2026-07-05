@@ -1551,12 +1551,49 @@ main {
   border-radius: 0.6rem;
 }
 
-.citation__texte {
-  font-family: var(--police-interface);
-  font-size: 0.9rem;
-  color: var(--texte-attenue);
-  margin: 0 0 1rem;
+.citation__bloc {
+  margin: 0 0 1.1rem;
+  padding: 0 0 0 1.1rem;
+  border-left: 3px solid var(--arpeteria-or-clair);
+}
+
+.citation__bloc p {
+  font-family: var(--police-editorial);
+  font-size: 0.95rem;
+  color: var(--texte);
+  margin: 0 0 0.5rem;
   line-height: 1.6;
+}
+
+.citation__bloc p.citation__url {
+  font-family: var(--police-interface);
+  font-size: 0.8rem;
+  color: var(--texte-attenue);
+  word-break: break-all;
+}
+
+.citation__url a {
+  color: var(--arpeteria-rouge);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.citation__url a:hover {
+  color: var(--arpeteria-rouge-fonce);
+}
+
+.citation__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.citation__note {
+  font-family: var(--police-interface);
+  font-size: 0.78rem;
+  color: var(--texte-attenue);
+  font-style: italic;
 }
 
 .citation__bouton {
