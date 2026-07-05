@@ -40,6 +40,7 @@ const parDiscipline: Ligne[] = categoriesContemporain
 
 const parLangue = versLignes(compter<Langue>(oeuvres.map((o) => o.langue)), LABELS_LANGUE);
 const parType = versLignes(compter<TypeMedia>(oeuvres.map((o) => o.type_media)), LABELS_TYPE_MEDIA);
+const parOrthographe = versLignes(compter<string>(oeuvres.flatMap((o) => o.orthographes ?? [])));
 
 const nombreArchives = oeuvres.filter((o) => o.section === 'archives').length;
 const nombreContemporain = oeuvres.filter((o) => o.section === 'contemporain').length;
@@ -170,5 +171,27 @@ const maxSection = Math.max(nombreArchives, nombreContemporain, 1);
         </section>
       )}
     </div>
+
+    {parOrthographe.length > 0 && (
+      <section class="stats-groupe">
+        <h2>Par orthographe</h2>
+        <ul class="liste-stats">
+          {parOrthographe.map((ligne) => (
+            <li>
+              <div class="liste-stats__ligne">
+                <span class="liste-stats__label">{ligne.label}</span>
+                <span class="liste-stats__valeur">{ligne.valeur}</span>
+              </div>
+              <div class="liste-stats__barre">
+                <div
+                  class="liste-stats__remplissage"
+                  style={`width:${(ligne.valeur / parOrthographe[0].valeur) * 100}%`}
+                />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
   </main>
 </Base>

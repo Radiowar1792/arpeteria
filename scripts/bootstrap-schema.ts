@@ -233,6 +233,16 @@ const collections: CollectionDef[] = [
         meta: { interface: 'input', options: { placeholder: 'ex : vers 1846' } },
       },
       {
+        field: 'orthographes',
+        type: 'json',
+        meta: {
+          interface: 'tags',
+          special: ['cast-json'],
+          note:
+            "Orthographe(s) utilisée(s) dans cette œuvre (une œuvre peut en avoir plusieurs). Ex : ORB, graphie de Conflans, graphie de Savoie. Tapez un intitulé et validez pour l'ajouter comme tag.",
+        },
+      },
+      {
         field: 'date_publication',
         type: 'timestamp',
         meta: { interface: 'datetime', readonly: true, hidden: true, special: ['date-created'] },

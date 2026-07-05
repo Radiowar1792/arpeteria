@@ -1,0 +1,83 @@
+---
+import type { Langue } from '../lib/directus.ts';
+import { LABELS_LANGUE } from '../lib/langues.ts';
+
+interface Props {
+  langues: Langue[];
+  orthographes: string[];
+}
+const { langues, orthographes } = Astro.props;
+---
+{(langues.length > 1 || orthographes.length > 1) && (
+  <div class="filtres-oeuvres">
+    {langues.length > 1 && (
+      <div class="filtre-langues" role="group" aria-label="Filtrer par langue" data-filtre-groupe="langue">
+        <button type="button" class="filtre-langues__pilule est-actif" data-valeur="tout">
+          Toutes langues
+        </button>
+        {langues.map((langue) => (
+          <button type="button" class="filtre-langues__pilule" data-valeur={langue}>
+            {LABELS_LANGUE[langue]}
+          </button>
+        ))}
+      </div>
+    )}
+    {orthographes.length > 1 && (
+      <div class="filtre-langues" role="group" aria-label="Filtrer par orthographe" data-filtre-groupe="orthographe">
+        <button type="button" class="filtre-langues__pilule est-actif" data-valeur="tout">
+          Toutes orthographes
+        </button>
+        {orthographes.map((orthographe) => (
+          <button type="button" class="filtre-langues__pilule" data-valeur={orthographe}>
+            {orthographe}
+          </button>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
+<script>
+  function initFiltresOeuvres() {
+    document.querySelectorAll<HTMLElement>('.filtres-oeuvres').forEach((conteneur) => {
+      if (conteneur.dataset.pret) return;
+      const grille = conteneur.nextElementSibling;
+      if (!grille) return;
+      conteneur.dataset.pret = 'true';
+
+      const items = Array.from(grille.querySelectorAll<HTMLElement>('[data-langue]'));
+      const groupes = Array.from(conteneur.querySelectorAll<HTMLElement>('[data-filtre-groupe]'));
+      const choix = new Map<string, string>();
+      groupes.forEach((groupe) => choix.set(groupe.dataset.filtreGroupe as string, 'tout'));
+
+      function appliquer() {
+        items.forEach((item) => {
+          const choixLangue = choix.get('langue');
+          const langueOk = !choixLangue || choixLangue === 'tout' || item.dataset.langue === choixLangue;
+
+          const choixOrthographe = choix.get('orthographe');
+          const orthographesItem = (item.dataset.orthographes ?? '').split('|').filter(Boolean);
+          const orthographeOk =
+            !choixOrthographe || choixOrthographe === 'tout' || orthographesItem.includes(choixOrthographe);
+
+          item.style.display = langueOk && orthographeOk ? '' : 'none';
+        });
+      }
+
+      conteneur.addEventListener('click', (evenement) => {
+        const bouton = (evenement.target as HTMLElement).closest<HTMLButtonElement>('.filtre-langues__pilule');
+        if (!bouton) return;
+        const groupe = bouton.closest<HTMLElement>('[data-filtre-groupe]');
+        if (!groupe) return;
+
+        choix.set(groupe.dataset.filtreGroupe as string, bouton.dataset.valeur ?? 'tout');
+        Array.from(groupe.querySelectorAll<HTMLButtonElement>('.filtre-langues__pilule')).forEach((b) =>
+          b.classList.toggle('est-actif', b === bouton)
+        );
+        appliquer();
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initFiltresOeuvres);
+</script>

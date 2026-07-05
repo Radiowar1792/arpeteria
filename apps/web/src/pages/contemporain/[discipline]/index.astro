@@ -2,7 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import CarteOeuvre from '../../../components/CarteOeuvre.astro';
 import BreadcrumbSchema from '../../../components/BreadcrumbSchema.astro';
-import FiltreLangues from '../../../components/FiltreLangues.astro';
+import FiltresOeuvres from '../../../components/FiltresOeuvres.astro';
 import { getCategories, getOeuvres, type Categorie, type Langue } from '../../../lib/directus.ts';
 import { canonicalUrl } from '../../../lib/seo.ts';
 import { ILLUSTRATIONS_DISCIPLINES, illustrationCategorie } from '../../../lib/illustrations.ts';
@@ -21,6 +21,7 @@ interface Props {
 const { categorie } = Astro.props;
 const oeuvres = await getOeuvres({ categorieSlug: categorie.slug });
 const langues = Array.from(new Set(oeuvres.map((o) => o.langue).filter((l): l is Langue => Boolean(l))));
+const orthographes = Array.from(new Set(oeuvres.flatMap((o) => o.orthographes ?? [])));
 const illustration = illustrationCategorie(categorie, ILLUSTRATIONS_DISCIPLINES);
 const filAriane = [
   { name: 'Accueil', url: canonicalUrl('/') },
@@ -44,10 +45,10 @@ const filAriane = [
 
     {oeuvres.length > 0 ? (
       <>
-        <FiltreLangues langues={langues} />
+        <FiltresOeuvres langues={langues} orthographes={orthographes} />
         <ul class="grille-oeuvres">
           {oeuvres.map((oeuvre) => (
-            <li data-langue={oeuvre.langue ?? 'fr'}>
+            <li data-langue={oeuvre.langue ?? 'fr'} data-orthographes={(oeuvre.orthographes ?? []).join('|')}>
               <CarteOeuvre oeuvre={oeuvre} />
             </li>
           ))}

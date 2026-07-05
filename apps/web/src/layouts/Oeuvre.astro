@@ -70,6 +70,18 @@ const citation = `${oeuvre.auteur || 'Anonyme'}${oeuvre.date_oeuvre ? ` (${oeuvr
 
     <h1 lang={oeuvre.langue ?? 'fr'} transition:name={`titre-${oeuvre.id}`}>{oeuvre.titre}</h1>
 
+    {oeuvre.orthographes && oeuvre.orthographes.length > 0 && (
+      <ul class="orthographes" aria-label="Orthographes utilisées dans cette œuvre">
+        {oeuvre.orthographes.map((orthographe) => (
+          <li>
+            <a class="orthographes__tag" href={`/orthographe/${slugifierMotCle(orthographe)}`}>
+              {orthographe}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+
     {/* Métadonnées pour les facettes de recherche Pagefind — non visibles, redondantes avec
         le fil d'Ariane/la visionneuse/l'attribut lang déjà affichés sur la page. */}
     <div style="display:none" aria-hidden="true">
@@ -77,6 +89,9 @@ const citation = `${oeuvre.auteur || 'Anonyme'}${oeuvre.date_oeuvre ? ` (${oeuvr
       <span data-pagefind-filter="Type">{LABELS_TYPE_MEDIA[oeuvre.type_media]}</span>
       {oeuvre.langue && <span data-pagefind-filter="Langue">{LABELS_LANGUE[oeuvre.langue]}</span>}
       {oeuvre.categorie && <span data-pagefind-filter="Catégorie">{oeuvre.categorie.nom}</span>}
+      {oeuvre.orthographes?.map((orthographe) => (
+        <span data-pagefind-filter="Orthographe">{orthographe}</span>
+      ))}
     </div>
     {oeuvre.auteur && <p class="fiche-oeuvre__auteur">{oeuvre.auteur}</p>}
     {oeuvre.date_oeuvre && <p class="fiche-oeuvre__date">{oeuvre.date_oeuvre}</p>}

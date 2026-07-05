@@ -31,6 +31,7 @@ export interface Oeuvre {
   couverture: DirectusFile | null;
   langue: Langue | null;
   date_oeuvre: string | null;
+  orthographes: string[] | null;
   date_publication: string;
   mots_cles: string[] | null;
 }
@@ -110,6 +111,7 @@ const OEUVRE_FIELDS = [
   'url_externe',
   'langue',
   'date_oeuvre',
+  'orthographes',
   'date_publication',
   'mots_cles',
   'categorie.id',
