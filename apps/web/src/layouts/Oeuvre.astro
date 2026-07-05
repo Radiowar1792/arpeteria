@@ -72,15 +72,20 @@ const citation = `${referenceCitation} Disponible sur : ${url}`;
     <h1 lang={oeuvre.langue ?? 'fr'} transition:name={`titre-${oeuvre.id}`}>{oeuvre.titre}</h1>
 
     {oeuvre.orthographes && oeuvre.orthographes.length > 0 && (
-      <ul class="orthographes" aria-label="Orthographes utilisées dans cette œuvre">
-        {oeuvre.orthographes.map((orthographe) => (
-          <li>
-            <a class="orthographes__tag" href={`/orthographe/${slugifierMotCle(orthographe)}`}>
-              {orthographe}
-            </a>
-          </li>
-        ))}
-      </ul>
+      <div class="orthographes-bloc">
+        <p class="orthographes__label">
+          {oeuvre.orthographes.length > 1 ? 'Orthographes utilisées' : 'Orthographe utilisée'}
+        </p>
+        <ul class="orthographes" aria-label="Orthographes utilisées dans cette œuvre">
+          {oeuvre.orthographes.map((orthographe) => (
+            <li>
+              <a class="orthographes__tag" href={`/orthographe/${slugifierMotCle(orthographe)}`}>
+                {orthographe}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     )}
 
     {/* Métadonnées pour les facettes de recherche Pagefind — non visibles, redondantes avec
