@@ -17,7 +17,8 @@ interface Props {
 }
 const { oeuvre } = Astro.props;
 const url = canonicalUrl(`/oeuvre/${oeuvre.slug}`);
-const image = oeuvre.couverture ? assetUrl(oeuvre.couverture.id, { width: 800, height: 600 }) : undefined;
+const image = oeuvre.couverture ? assetUrl(oeuvre.couverture.id, { width: 1200, height: 630 }) : undefined;
+const imageCouverture = oeuvre.couverture ? assetUrl(oeuvre.couverture.id, { width: 640 }) : undefined;
 const sectionLabel = oeuvre.section === 'archives' ? 'Archives' : 'Contemporain';
 
 const oeuvresLiees = (
@@ -57,16 +58,16 @@ const citation = `${referenceCitation} Disponible sur : ${url}`;
       )}
     </nav>
 
-    {image && (
-      <img
-        class="fiche-oeuvre__couverture"
-        src={image}
-        alt=""
-        width="800"
-        height="600"
-        decoding="async"
-        transition:name={`couverture-${oeuvre.id}`}
-      />
+    {imageCouverture && (
+      <div class="fiche-oeuvre__media">
+        <img
+          class="fiche-oeuvre__couverture"
+          src={imageCouverture}
+          alt=""
+          decoding="async"
+          transition:name={`couverture-${oeuvre.id}`}
+        />
+      </div>
     )}
 
     <h1 lang={oeuvre.langue ?? 'fr'} transition:name={`titre-${oeuvre.id}`}>{oeuvre.titre}</h1>
