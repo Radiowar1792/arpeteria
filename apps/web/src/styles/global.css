@@ -1217,6 +1217,42 @@ main {
   transition: opacity var(--transition-douce);
 }
 
+.lecteur-pdf__erreur {
+  display: none;
+}
+
+.lecteur-pdf__stage--erreur .lecteur-pdf__cadre {
+  display: none;
+}
+
+.lecteur-pdf__stage--erreur .lecteur-pdf__erreur {
+  display: flex;
+  position: absolute;
+  inset: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+  color: var(--arpeteria-gris-clair);
+  font-family: var(--police-interface);
+}
+
+.lecteur-pdf__erreur-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.lecteur-pdf__action--bouton {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
 /* ── Lecteur vidéo (YouTube) ── */
 .lecteur-video {
   margin-top: 2rem;

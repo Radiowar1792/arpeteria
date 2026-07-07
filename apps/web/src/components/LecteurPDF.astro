@@ -21,12 +21,59 @@ const url = assetUrl(fichierId);
       <a class="lecteur-pdf__action" href={`${url}?download`} download>Télécharger</a>
     </div>
   </div>
-  <div class="lecteur-pdf__stage lecteur-pdf__stage--chargement">
-    <iframe
-      class="lecteur-pdf__cadre"
-      src={url}
-      title="Aperçu du PDF"
-      onload="this.parentElement.classList.remove('lecteur-pdf__stage--chargement')"
-    ></iframe>
+  <div class="lecteur-pdf__stage lecteur-pdf__stage--chargement" data-lecteur-pdf-stage data-src={url}>
+    <iframe class="lecteur-pdf__cadre" src={url} title="Aperçu du PDF" data-lecteur-pdf-cadre></iframe>
+    <div class="lecteur-pdf__erreur" data-lecteur-pdf-erreur>
+      <p>L'aperçu met trop de temps à s'afficher. Le serveur est peut-être temporairement surchargé.</p>
+      <div class="lecteur-pdf__erreur-actions">
+        <button type="button" class="lecteur-pdf__action lecteur-pdf__action--bouton" data-lecteur-pdf-reessayer>
+          Réessayer
+        </button>
+        <a class="lecteur-pdf__action" href={url} target="_blank" rel="noopener">Ouvrir dans un nouvel onglet</a>
+      </div>
+    </div>
   </div>
 </div>
+
+<script>
+  const DELAI_TIMEOUT_MS = 15000;
+
+  function initLecteursPDF() {
+    document.querySelectorAll<HTMLElement>('[data-lecteur-pdf-stage]').forEach((stage) => {
+      if (stage.dataset.lecteurPdfInit) return;
+      stage.dataset.lecteurPdfInit = 'true';
+
+      const cadre = stage.querySelector<HTMLIFrameElement>('[data-lecteur-pdf-cadre]');
+      const bouton = stage.querySelector<HTMLButtonElement>('[data-lecteur-pdf-reessayer]');
+      const src = stage.dataset.src ?? '';
+      let minuteur: ReturnType<typeof setTimeout> | undefined;
+
+      const surChargement = () => {
+        window.clearTimeout(minuteur);
+        stage.classList.remove('lecteur-pdf__stage--chargement', 'lecteur-pdf__stage--erreur');
+      };
+
+      const demarrer = () => {
+        stage.classList.add('lecteur-pdf__stage--chargement');
+        stage.classList.remove('lecteur-pdf__stage--erreur');
+        window.clearTimeout(minuteur);
+        minuteur = window.setTimeout(() => {
+          stage.classList.remove('lecteur-pdf__stage--chargement');
+          stage.classList.add('lecteur-pdf__stage--erreur');
+        }, DELAI_TIMEOUT_MS);
+      };
+
+      cadre?.addEventListener('load', surChargement);
+      bouton?.addEventListener('click', () => {
+        if (!cadre) return;
+        demarrer();
+        cadre.src = 'about:blank';
+        cadre.src = src;
+      });
+
+      demarrer();
+    });
+  }
+
+  document.addEventListener('astro:page-load', initLecteursPDF);
+</script>
